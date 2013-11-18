@@ -40,30 +40,32 @@ as described in [http://en.wikipedia.org/wiki/Block_cipher_mode_of_operation].</
 </div>
 <h3>Subclasses</h3>
 <p>
-<span class="type-box"><span class="icon-class"></span><a href="../cipher.modes.sic/SICBlockCipher.html">SICBlockCipher</a></span></p>
+<span class="type-box"><span class="icon-class"></span><a href="../cipher.modes.cbc/CBCBlockCipher.html">CBCBlockCipher</a></span>, <span class="type-box"><span class="icon-class"></span><a href="../cipher.api/PaddedBlockCipher.html">PaddedBlockCipher</a></span>, <span class="type-box"><span class="icon-class"></span><a href="../cipher.adapters.stream_cipher_adapters/StreamCipherAsChainingBlockCipher.html">StreamCipherAsChainingBlockCipher</a></span></p>
 <h3>Implements</h3>
 <p>
 <span class="type-box"><span class="icon-class"></span><a href="../cipher.api/BlockCipher.html">BlockCipher</a></span></p>
 <div>
-<h3>Static Methods</h3>
-<div class="method"><h4 id="register">
-void <strong>register</strong>(<a href="http://api.dartlang.org/dart_core/String.html">String</a> algorithmName, <a href="../cipher.api/ChainingBlockCipherFactory.html">ChainingBlockCipherFactory</a> creator) <a class="anchor-link" href="#register"
-              title="Permalink to ChainingBlockCipher.register">#</a></h4>
-<div class="doc">
-<p>Register an algorithm by its standard name.</p>
+<h3>Static Properties</h3>
+<div class="field"><h4 id="registry">
+final         <strong>registry</strong> <a class="anchor-link"
+            href="#registry"
+            title="Permalink to ChainingBlockCipher.registry">#</a>
+        </h4>
+        <div class="doc">
+<p>The <a class="crossref" href="../cipher.api/Registry.html">Registry</a> for <a class="crossref" href="../cipher.api/ChainingBlockCipher.html">ChainingBlockCipher</a> algorithms</p>
 </div>
 </div>
 </div>
 <div>
 <h3>Constructors</h3>
 <div class="method"><h4 id="">
-factory <strong>ChainingBlockCipher</strong>(<a href="http://api.dartlang.org/dart_core/String.html">String</a> algorithmName, <a href="../cipher.api/BlockCipher.html">BlockCipher</a> underlyingCipher) <a class="anchor-link" href="#"
+factory <strong>ChainingBlockCipher</strong>(<a href="http://api.dartlang.org/dart_core/String.html">String</a> algorithmName) <a class="anchor-link" href="#"
               title="Permalink to ChainingBlockCipher.ChainingBlockCipher">#</a></h4>
 <div class="doc">
-<p> Create the cipher specified by the standard 
-<span class="param">algorithmName</span> using the
- provided 
-<span class="param">underlyingCipher</span>. </p>
+<p>Create the chaining block cipher specified by the standard 
+<span class="param">algorithmName</span>.</p>
+<p>Standard algorithms can be chained using / as a separator. For example: you
+can ask for "AES/CBC". </p>
 </div>
 </div>
 </div>
@@ -139,7 +141,7 @@ abstract void <strong>reset</strong>() <a class="anchor-link" href="#reset"
         <div class="clear"></div>
         </div>
         <div class="footer">
-          <div>This page was generated at 2013-11-01 18:02:22.981</div>
+          <div>This page was generated at 2013-11-18 22:09:49.058</div>
         </div>
         <script async src="../client-live-nav.js"></script>
         </body></html>

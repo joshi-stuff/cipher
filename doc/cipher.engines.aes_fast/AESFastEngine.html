@@ -82,15 +82,15 @@ final <a href="http://api.dartlang.org/dart_core/int.html">int</a>         <stro
 void <strong>init</strong>(<a href="http://api.dartlang.org/dart_core/bool.html">bool</a> forEncryption, <a href="../cipher.params.key_parameter/KeyParameter.html">KeyParameter</a> params) <a class="anchor-link" href="#init"
               title="Permalink to AESFastEngine.init">#</a></h4>
 <div class="doc">
-<p>initialise an AES cipher.
-Calculate the necessary round keys
-The number of calculations depends on key size and block size
-AES specified a fixed block size of 128 bits and key sizes 128/192/256 bits
-This code is written assuming those are the only possible values</p>
-<p>@param forEncryption whether or not we are for encryption.
-@param params the parameters required to set up the cipher.
-@exception IllegalArgumentException if the params argument is
-inappropriate.</p>
+<div class="inherited">
+<p>Init the cipher with its initialization 
+<span class="param">params</span>. The type of 
+<a class="crossref" href="../cipher.api/CipherParameters.html">CipherParameters</a> depends on the algorithm being used (see the 
+documentation of each implementation to find out more).</p>
+<p>Use the argument 
+<span class="param">forEncryption</span> to tell the cipher if you want to encrypt
+or decrypt data.  </p>
+<div class="docs-inherited-from">docs inherited from <a href="../cipher.api/BlockCipher.html">BlockCipher</a> </div></div>
 </div>
 </div>
 <div class="method"><h4 id="processBlock">
@@ -124,7 +124,7 @@ void <strong>reset</strong>() <a class="anchor-link" href="#reset"
         <div class="clear"></div>
         </div>
         <div class="footer">
-          <div>This page was generated at 2013-11-01 18:02:23.096</div>
+          <div>This page was generated at 2013-11-18 22:09:49.151</div>
         </div>
         <script async src="../client-live-nav.js"></script>
         </body></html>

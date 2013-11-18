@@ -32,10 +32,11 @@
         
 <button id="show-inherited" class="show-inherited">Hide inherited</button>
 <div class="doc">
+<p>Implementation of RIPEMD-160 digest. For more info see links:</p><ul><li><code>http://homes.esat.kuleuven.be/~bosselae/ripemd160.html (description)</code></li><li><code>http://homes.esat.kuleuven.be/~bosselae/ripemd/rmd160.txt (pseudocode)</code></li></ul>
 </div>
 <h3>Extends</h3>
 <p>
-<span class="type-box"><span class="icon-class"></span><a href="../cipher.digests.general_digest/GeneralDigest.html">GeneralDigest</a></span>&nbsp;&gt;&nbsp;<span class="type-box"><span class="icon-class"></span><strong>RIPEMD160Digest</strong></span></p>
+<span class="type-box"><span class="icon-class"></span><a href="../cipher.digests.md4_family_digest/MD4FamilyDigest.html">MD4FamilyDigest</a></span>&nbsp;&gt;&nbsp;<span class="type-box"><span class="icon-class"></span><strong>RIPEMD160Digest</strong></span></p>
 <h3>Implements</h3>
 <p>
 <span class="type-box"><span class="icon-class"></span><a href="../cipher.api/Digest.html">Digest</a></span></p>
@@ -93,25 +94,37 @@ offset
 <div class="method inherited"><h4 id="finish">
 void <strong>finish</strong>() <a class="anchor-link" href="#finish"
               title="Permalink to RIPEMD160Digest.finish">#</a></h4>
-<div class="inherited-from">inherited from <a href="../cipher.digests.general_digest/GeneralDigest.html">GeneralDigest</a> </div><div class="doc">
+<div class="inherited-from">inherited from <a href="../cipher.digests.md4_family_digest/MD4FamilyDigest.html">MD4FamilyDigest</a> </div><div class="doc">
+<p>Finish digestion of data adding padding and processing data's bit length.</p>
 </div>
 </div>
 <div class="method"><h4 id="processBlock">
 void <strong>processBlock</strong>() <a class="anchor-link" href="#processBlock"
               title="Permalink to RIPEMD160Digest.processBlock">#</a></h4>
 <div class="doc">
+<div class="inherited">
+<p>Process a whole block of data in extender digest.</p>
+<div class="docs-inherited-from">docs inherited from <a href="../cipher.digests.md4_family_digest/MD4FamilyDigest.html">MD4FamilyDigest</a> </div></div>
 </div>
 </div>
 <div class="method"><h4 id="processLength">
 void <strong>processLength</strong>(<a href="http://api.dartlang.org/dart_core/int.html">int</a> bitLength) <a class="anchor-link" href="#processLength"
               title="Permalink to RIPEMD160Digest.processLength">#</a></h4>
 <div class="doc">
+<div class="inherited">
+<p>Called from <a class="crossref" href="../cipher.digests.md4_family_digest/MD4FamilyDigest.html#finish">finish</a> so that extender can process the number of bits processed. </p>
+<div class="docs-inherited-from">docs inherited from <a href="../cipher.digests.md4_family_digest/MD4FamilyDigest.html">MD4FamilyDigest</a> </div></div>
 </div>
 </div>
 <div class="method"><h4 id="processWord">
 void <strong>processWord</strong>(<a href="http://api.dartlang.org/dart_typed_data/Uint8List.html">Uint8List</a> inp, <a href="http://api.dartlang.org/dart_core/int.html">int</a> inpOff) <a class="anchor-link" href="#processWord"
               title="Permalink to RIPEMD160Digest.processWord">#</a></h4>
 <div class="doc">
+<div class="inherited">
+<p>Process a word (4 bytes) of data stored in 
+<span class="param">inp</span>, starting at 
+<span class="param">inpOff</span>.</p>
+<div class="docs-inherited-from">docs inherited from <a href="../cipher.digests.md4_family_digest/MD4FamilyDigest.html">MD4FamilyDigest</a> </div></div>
 </div>
 </div>
 <div class="method"><h4 id="reset">
@@ -126,7 +139,7 @@ void <strong>reset</strong>() <a class="anchor-link" href="#reset"
 <div class="method inherited"><h4 id="update">
 void <strong>update</strong>(<a href="http://api.dartlang.org/dart_typed_data/Uint8List.html">Uint8List</a> inp, <a href="http://api.dartlang.org/dart_core/int.html">int</a> inpOff, <a href="http://api.dartlang.org/dart_core/int.html">int</a> len) <a class="anchor-link" href="#update"
               title="Permalink to RIPEMD160Digest.update">#</a></h4>
-<div class="inherited-from">inherited from <a href="../cipher.digests.general_digest/GeneralDigest.html">GeneralDigest</a> </div><div class="doc">
+<div class="inherited-from">inherited from <a href="../cipher.digests.md4_family_digest/MD4FamilyDigest.html">MD4FamilyDigest</a> </div><div class="doc">
 <div class="inherited">
 <p>Add 
 <span class="param">len</span> bytes of data contained in 
@@ -139,7 +152,7 @@ ti the digested input.</p>
 <div class="method inherited"><h4 id="updateByte">
 void <strong>updateByte</strong>(<a href="http://api.dartlang.org/dart_core/int.html">int</a> inp) <a class="anchor-link" href="#updateByte"
               title="Permalink to RIPEMD160Digest.updateByte">#</a></h4>
-<div class="inherited-from">inherited from <a href="../cipher.digests.general_digest/GeneralDigest.html">GeneralDigest</a> </div><div class="doc">
+<div class="inherited-from">inherited from <a href="../cipher.digests.md4_family_digest/MD4FamilyDigest.html">MD4FamilyDigest</a> </div><div class="doc">
 <div class="inherited">
 <p>Add one byte of data to the digested input.</p>
 <div class="docs-inherited-from">docs inherited from <a href="../cipher.api/Digest.html">Digest</a> </div></div>
@@ -150,7 +163,7 @@ void <strong>updateByte</strong>(<a href="http://api.dartlang.org/dart_core/int.
         <div class="clear"></div>
         </div>
         <div class="footer">
-          <div>This page was generated at 2013-11-01 18:02:23.070</div>
+          <div>This page was generated at 2013-11-18 22:09:49.127</div>
         </div>
         <script async src="../client-live-nav.js"></script>
         </body></html>
