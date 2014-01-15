@@ -1,0 +1,116 @@
+        <!DOCTYPE html>
+        <html>
+        <head>
+                <meta charset="utf-8">
+        <title>Padding abstract class / cipher.api Library / Dart Documentation</title>
+        <link rel="stylesheet" type="text/css"
+            href="../styles.css">
+        <link href="//fonts.googleapis.com/css?family=Open+Sans:400,600,700,800" rel="stylesheet" type="text/css">
+        <link rel="shortcut icon" href="../favicon.ico">
+        
+        </head>
+        <body data-library="cipher.api" data-type="Padding">
+        <div class="page">
+        <div class="header">
+          <a href="../index.html"><div class="logo"></div></a>
+          <a href="../index.html">Dart Documentation</a>
+         &rsaquo; <a href="../cipher.api.html">cipher.api</a> &rsaquo; <a href="../cipher.api/Padding.html">Padding</a>        <div id="search-box">
+          <input type="search" name="q" id="q" autocomplete="off"
+              class="search-input" placeholder="Search API">
+        </div>
+        
+      </div>
+      <div class="drop-down" id="drop-down"></div>
+      
+        <div class="nav">
+        
+</div>
+<div class="content">
+        <h2><strong>Padding</strong>
+          abstract class
+        </h2>
+        
+<button id="show-inherited" class="show-inherited">Hide inherited</button>
+<div class="doc">
+<p>The interface that a padding conforms to.</p>
+</div>
+<h3>Subclasses</h3>
+<p>
+<span class="type-box"><span class="icon-class"></span><a href="../cipher.paddings.pkcs7/PKCS7Padding.html">PKCS7Padding</a></span></p>
+<div>
+<h3>Static Properties</h3>
+<div class="field"><h4 id="registry">
+final         <strong>registry</strong> <a class="anchor-link"
+            href="#registry"
+            title="Permalink to Padding.registry">#</a>
+        </h4>
+        <div class="doc">
+<p>The <a class="crossref" href="../cipher.api/Registry.html">Registry</a> for <a class="crossref" href="../cipher.api/Padding.html">Padding</a> algorithms</p>
+</div>
+</div>
+</div>
+<div>
+<h3>Constructors</h3>
+<div class="method"><h4 id="">
+factory <strong>Padding</strong>(<a href="http://api.dartlang.org/dart_core/String.html">String</a> algorithmName) <a class="anchor-link" href="#"
+              title="Permalink to Padding.Padding">#</a></h4>
+<div class="doc">
+<p>Create the digest specified by the standard 
+<span class="param">algorithmName</span>.</p>
+</div>
+</div>
+</div>
+<div>
+<h3>Properties</h3>
+<div class="field"><h4 id="algorithmName">
+final <a href="http://api.dartlang.org/dart_core/String.html">String</a>         <strong>algorithmName</strong> <a class="anchor-link"
+            href="#algorithmName"
+            title="Permalink to Padding.algorithmName">#</a>
+        </h4>
+        <div class="doc">
+<p>Get this padding's standard algorithm name.</p>
+</div>
+</div>
+</div>
+<div>
+<h3>Methods</h3>
+<div class="method"><h4 id="addPadding">
+abstract <a href="http://api.dartlang.org/dart_core/int.html">int</a> <strong>addPadding</strong>(<a href="http://api.dartlang.org/dart_typed_data/Uint8List.html">Uint8List</a> data, <a href="http://api.dartlang.org/dart_core/int.html">int</a> offset) <a class="anchor-link" href="#addPadding"
+              title="Permalink to Padding.addPadding">#</a></h4>
+<div class="doc">
+<p>Add the pad bytes to the passed in block, returning the number of bytes
+added.</p>
+<p>Note: this assumes that the last block of plain text is always passed to it
+inside 
+<span class="param">data</span>. i.e. if 
+<span class="param">offset</span> is zero, indicating the entire block is to
+be overwritten with padding the value of 
+<span class="param">data</span> should be the same as the
+last block of plain text. The reason for this is that some modes such as
+"trailing bit compliment" base the padding on the last byte of plain text.</p>
+</div>
+</div>
+<div class="method"><h4 id="init">
+abstract void <strong>init</strong>([<a href="../cipher.api/CipherParameters.html">CipherParameters</a> params]) <a class="anchor-link" href="#init"
+              title="Permalink to Padding.init">#</a></h4>
+<div class="doc">
+<p>Initialise the padder. Normally, paddings don't need any init params.</p>
+</div>
+</div>
+<div class="method"><h4 id="padCount">
+abstract <a href="http://api.dartlang.org/dart_core/int.html">int</a> <strong>padCount</strong>(<a href="http://api.dartlang.org/dart_typed_data/Uint8List.html">Uint8List</a> data) <a class="anchor-link" href="#padCount"
+              title="Permalink to Padding.padCount">#</a></h4>
+<div class="doc">
+<p>Get the number of pad bytes present in the block.</p>
+</div>
+</div>
+</div>
+        </div>
+        <div class="clear"></div>
+        </div>
+        <div class="footer">
+          <div>This page was generated at 2014-01-15 14:19:02.398</div>
+        </div>
+        <script async src="../client-live-nav.js"></script>
+        </body></html>
+        

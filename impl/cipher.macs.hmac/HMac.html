@@ -1,0 +1,143 @@
+        <!DOCTYPE html>
+        <html>
+        <head>
+                <meta charset="utf-8">
+        <title>HMac class / cipher.macs.hmac Library / Dart Documentation</title>
+        <link rel="stylesheet" type="text/css"
+            href="../styles.css">
+        <link href="//fonts.googleapis.com/css?family=Open+Sans:400,600,700,800" rel="stylesheet" type="text/css">
+        <link rel="shortcut icon" href="../favicon.ico">
+        
+        </head>
+        <body data-library="cipher.macs.hmac" data-type="HMac">
+        <div class="page">
+        <div class="header">
+          <a href="../index.html"><div class="logo"></div></a>
+          <a href="../index.html">Dart Documentation</a>
+         &rsaquo; <a href="../cipher.macs.hmac.html">cipher.macs.hmac</a> &rsaquo; <a href="../cipher.macs.hmac/HMac.html">HMac</a>        <div id="search-box">
+          <input type="search" name="q" id="q" autocomplete="off"
+              class="search-input" placeholder="Search API">
+        </div>
+        
+      </div>
+      <div class="drop-down" id="drop-down"></div>
+      
+        <div class="nav">
+        
+</div>
+<div class="content">
+        <h2><strong>HMac</strong>
+          class
+        </h2>
+        
+<button id="show-inherited" class="show-inherited">Hide inherited</button>
+<div class="doc">
+<p>HMAC implementation based on RFC2104</p>
+<p>H(K XOR opad, H(K XOR ipad, text))</p>
+</div>
+<h3>Implements</h3>
+<p>
+<span class="type-box"><span class="icon-class"></span><a href="../cipher.api/Mac.html">Mac</a></span></p>
+<div>
+<h3>Constructors</h3>
+<div class="method"><h4 id="">
+new <strong>HMac</strong>(<a href="../cipher.api/Digest.html">Digest</a> _digest, <a href="http://api.dartlang.org/dart_core/int.html">int</a> _blockLength) <a class="anchor-link" href="#"
+              title="Permalink to HMac.HMac">#</a></h4>
+<div class="doc">
+<div class="inherited">
+<p>Create the MAC specified by the standard <a class="crossref" href="../cipher.macs.hmac/HMac.html#algorithmName">algorithmName</a>.</p>
+<div class="docs-inherited-from">docs inherited from <a href="../cipher.api/Mac.html">Mac</a> </div></div>
+</div>
+</div>
+</div>
+<div>
+<h3>Properties</h3>
+<div class="field"><h4 id="algorithmName">
+final <a href="http://api.dartlang.org/dart_core/String.html">String</a>         <strong>algorithmName</strong> <a class="anchor-link"
+            href="#algorithmName"
+            title="Permalink to HMac.algorithmName">#</a>
+        </h4>
+        <div class="doc">
+<div class="inherited">
+<p>Get this MAC's standard algorithm name.</p>
+<div class="docs-inherited-from">docs inherited from <a href="../cipher.api/Mac.html">Mac</a> </div></div>
+</div>
+</div>
+<div class="field"><h4 id="macSize">
+final <a href="http://api.dartlang.org/dart_core/int.html">int</a>         <strong>macSize</strong> <a class="anchor-link"
+            href="#macSize"
+            title="Permalink to HMac.macSize">#</a>
+        </h4>
+        <div class="doc">
+<div class="inherited">
+<p>Get this MAC's output size.</p>
+<div class="docs-inherited-from">docs inherited from <a href="../cipher.api/Mac.html">Mac</a> </div></div>
+</div>
+</div>
+</div>
+<div>
+<h3>Methods</h3>
+<div class="method"><h4 id="doFinal">
+<a href="http://api.dartlang.org/dart_core/int.html">int</a> <strong>doFinal</strong>(<a href="http://api.dartlang.org/dart_typed_data/Uint8List.html">Uint8List</a> out, <a href="http://api.dartlang.org/dart_core/int.html">int</a> outOff) <a class="anchor-link" href="#doFinal"
+              title="Permalink to HMac.doFinal">#</a></h4>
+<div class="doc">
+<div class="inherited">
+<p>Store the MAC of previously given data in buffer 
+<span class="param">out</span> starting at
+offset 
+<span class="param">outOff</span>. This method returns the size of the digest.</p>
+<div class="docs-inherited-from">docs inherited from <a href="../cipher.api/Mac.html">Mac</a> </div></div>
+</div>
+</div>
+<div class="method"><h4 id="init">
+void <strong>init</strong>(<a href="../cipher.params.key_parameter/KeyParameter.html">KeyParameter</a> params) <a class="anchor-link" href="#init"
+              title="Permalink to HMac.init">#</a></h4>
+<div class="doc">
+<div class="inherited">
+<p>Init the MAC with its initialization 
+<span class="param">params</span>. The type of <a class="crossref" href="../cipher.api/CipherParameters.html">CipherParameters</a> depends on the algorithm being used (see
+the documentation of each implementation to find out more).</p>
+<div class="docs-inherited-from">docs inherited from <a href="../cipher.api/Mac.html">Mac</a> </div></div>
+</div>
+</div>
+<div class="method"><h4 id="reset">
+void <strong>reset</strong>() <a class="anchor-link" href="#reset"
+              title="Permalink to HMac.reset">#</a></h4>
+<div class="doc">
+<div class="inherited">
+<p>Reset the MAC to its original state.</p>
+<div class="docs-inherited-from">docs inherited from <a href="../cipher.api/Mac.html">Mac</a> </div></div>
+</div>
+</div>
+<div class="method"><h4 id="update">
+void <strong>update</strong>(<a href="http://api.dartlang.org/dart_typed_data/Uint8List.html">Uint8List</a> inp, <a href="http://api.dartlang.org/dart_core/int.html">int</a> inpOff, <a href="http://api.dartlang.org/dart_core/int.html">int</a> len) <a class="anchor-link" href="#update"
+              title="Permalink to HMac.update">#</a></h4>
+<div class="doc">
+<div class="inherited">
+<p>Add 
+<span class="param">len</span> bytes of data contained in 
+<span class="param">inp</span>, starting at position 
+<span class="param">inpOff</span>
+to the MAC'ed input.</p>
+<div class="docs-inherited-from">docs inherited from <a href="../cipher.api/Mac.html">Mac</a> </div></div>
+</div>
+</div>
+<div class="method"><h4 id="updateByte">
+void <strong>updateByte</strong>(<a href="http://api.dartlang.org/dart_core/int.html">int</a> inp) <a class="anchor-link" href="#updateByte"
+              title="Permalink to HMac.updateByte">#</a></h4>
+<div class="doc">
+<div class="inherited">
+<p>Add one byte of data to the MAC input.</p>
+<div class="docs-inherited-from">docs inherited from <a href="../cipher.api/Mac.html">Mac</a> </div></div>
+</div>
+</div>
+</div>
+        </div>
+        <div class="clear"></div>
+        </div>
+        <div class="footer">
+          <div>This page was generated at 2014-01-15 14:19:18.258</div>
+        </div>
+        <script async src="../client-live-nav.js"></script>
+        </body></html>
+        

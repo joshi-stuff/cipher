@@ -1,1 +1,0 @@
-{"kind":"library","id":"cipher","comment":"\nThis is the main entry point to the cipher library. \n\nThis file includes the [cipher.api] and [cipher.impl] libraries, which \ncomprise the whole API specification plus all the out-of-the-box \nimplementations of algorithms.\n","uri":"file:///Users/Ivan/Documents/Dart/veltesta/cipher/lib/cipher.dart","line":"12"}
