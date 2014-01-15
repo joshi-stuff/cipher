@@ -1,0 +1,114 @@
+        <!DOCTYPE html>
+        <html>
+        <head>
+                <meta charset="utf-8">
+        <title>ECCurve abstract class / cipher.api Library / Dart Documentation</title>
+        <link rel="stylesheet" type="text/css"
+            href="../styles.css">
+        <link href="//fonts.googleapis.com/css?family=Open+Sans:400,600,700,800" rel="stylesheet" type="text/css">
+        <link rel="shortcut icon" href="../favicon.ico">
+        
+        </head>
+        <body data-library="cipher.api" data-type="ECCurve">
+        <div class="page">
+        <div class="header">
+          <a href="../index.html"><div class="logo"></div></a>
+          <a href="../index.html">Dart Documentation</a>
+         &rsaquo; <a href="../cipher.api.html">cipher.api</a> &rsaquo; <a href="../cipher.api/ECCurve.html">ECCurve</a>        <div id="search-box">
+          <input type="search" name="q" id="q" autocomplete="off"
+              class="search-input" placeholder="Search API">
+        </div>
+        
+      </div>
+      <div class="drop-down" id="drop-down"></div>
+      
+        <div class="nav">
+        
+</div>
+<div class="content">
+        <h2><strong>ECCurve</strong>
+          abstract class
+        </h2>
+        
+<button id="show-inherited" class="show-inherited">Hide inherited</button>
+<div class="doc">
+<p>An elliptic curve</p>
+</div>
+<h3>Subclasses</h3>
+<p>
+<span class="type-box"><span class="icon-class"></span><a href="../cipher.ecc.ecc_base/ECCurveBase.html">ECCurveBase</a></span></p>
+<div>
+<h3>Properties</h3>
+<div class="field"><h4 id="a">
+final <a href="../cipher.api/ECFieldElement.html">ECFieldElement</a>         <strong>a</strong> <a class="anchor-link"
+            href="#a"
+            title="Permalink to ECCurve.a">#</a>
+        </h4>
+        <div class="doc">
+</div>
+</div>
+<div class="field"><h4 id="b">
+final <a href="../cipher.api/ECFieldElement.html">ECFieldElement</a>         <strong>b</strong> <a class="anchor-link"
+            href="#b"
+            title="Permalink to ECCurve.b">#</a>
+        </h4>
+        <div class="doc">
+</div>
+</div>
+<div class="field"><h4 id="fieldSize">
+final <a href="http://api.dartlang.org/dart_core/int.html">int</a>         <strong>fieldSize</strong> <a class="anchor-link"
+            href="#fieldSize"
+            title="Permalink to ECCurve.fieldSize">#</a>
+        </h4>
+        <div class="doc">
+</div>
+</div>
+<div class="field"><h4 id="infinity">
+final <a href="../cipher.api/ECPoint.html">ECPoint</a>         <strong>infinity</strong> <a class="anchor-link"
+            href="#infinity"
+            title="Permalink to ECCurve.infinity">#</a>
+        </h4>
+        <div class="doc">
+</div>
+</div>
+</div>
+<div>
+<h3>Methods</h3>
+<div class="method"><h4 id="createPoint">
+abstract <a href="../cipher.api/ECPoint.html">ECPoint</a> <strong>createPoint</strong>(BigInteger x, BigInteger y, [<a href="http://api.dartlang.org/dart_core/bool.html">bool</a> withCompression = false]) <a class="anchor-link" href="#createPoint"
+              title="Permalink to ECCurve.createPoint">#</a></h4>
+<div class="doc">
+<p>Create an <a class="crossref" href="../cipher.api/ECPoint.html">ECPoint</a> on its curve from its coordinates</p>
+</div>
+</div>
+<div class="method"><h4 id="decodePoint">
+abstract <a href="../cipher.api/ECPoint.html">ECPoint</a> <strong>decodePoint</strong>(<a href="http://api.dartlang.org/dart_core/List.html">List</a>&lt;<a href="http://api.dartlang.org/dart_core/int.html">int</a>&gt; encoded) <a class="anchor-link" href="#decodePoint"
+              title="Permalink to ECCurve.decodePoint">#</a></h4>
+<div class="doc">
+<p>Decode a point on this curve from its ASN.1 encoding. The different encodings are taken account of, including point
+compression for Fp (X9.62 s 4.2.1 pg 17).</p>
+</div>
+</div>
+<div class="method"><h4 id="decompressPoint">
+abstract <a href="../cipher.api/ECPoint.html">ECPoint</a> <strong>decompressPoint</strong>(<a href="http://api.dartlang.org/dart_core/int.html">int</a> yTilde, BigInteger X1) <a class="anchor-link" href="#decompressPoint"
+              title="Permalink to ECCurve.decompressPoint">#</a></h4>
+<div class="doc">
+</div>
+</div>
+<div class="method"><h4 id="fromBigInteger">
+abstract <a href="../cipher.api/ECFieldElement.html">ECFieldElement</a> <strong>fromBigInteger</strong>(BigInteger x) <a class="anchor-link" href="#fromBigInteger"
+              title="Permalink to ECCurve.fromBigInteger">#</a></h4>
+<div class="doc">
+<p>Create an <a class="crossref" href="../cipher.api/ECFieldElement.html">ECFieldElement</a> on this curve from its big integer value.</p>
+</div>
+</div>
+</div>
+        </div>
+        <div class="clear"></div>
+        </div>
+        <div class="footer">
+          <div>This page was generated at 2014-01-15 14:19:17.617</div>
+        </div>
+        <script async src="../client-live-nav.js"></script>
+        </body></html>
+        

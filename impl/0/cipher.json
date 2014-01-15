@@ -1,0 +1,1 @@
+{"kind":"library","id":"cipher","comment":"\nThis is the main entry point to the cipher library.\n\nThis file includes the [cipher.api], [cipher.parameters] and [cipher.impl] libraries, which comprise the whole API\nspecification plus all the out-of-the-box implementations of algorithms.\n","uri":"file:///home/ubuntu/src/github.com/izaera/cipher/lib/cipher.dart","line":"11"}

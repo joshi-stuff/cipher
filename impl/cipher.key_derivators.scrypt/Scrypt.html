@@ -1,0 +1,105 @@
+        <!DOCTYPE html>
+        <html>
+        <head>
+                <meta charset="utf-8">
+        <title>Scrypt class / cipher.key_derivators.scrypt Library / Dart Documentation</title>
+        <link rel="stylesheet" type="text/css"
+            href="../styles.css">
+        <link href="//fonts.googleapis.com/css?family=Open+Sans:400,600,700,800" rel="stylesheet" type="text/css">
+        <link rel="shortcut icon" href="../favicon.ico">
+        
+        </head>
+        <body data-library="cipher.key_derivators.scrypt" data-type="Scrypt">
+        <div class="page">
+        <div class="header">
+          <a href="../index.html"><div class="logo"></div></a>
+          <a href="../index.html">Dart Documentation</a>
+         &rsaquo; <a href="../cipher.key_derivators.scrypt.html">cipher.key_derivators.scrypt</a> &rsaquo; <a href="../cipher.key_derivators.scrypt/Scrypt.html">Scrypt</a>        <div id="search-box">
+          <input type="search" name="q" id="q" autocomplete="off"
+              class="search-input" placeholder="Search API">
+        </div>
+        
+      </div>
+      <div class="drop-down" id="drop-down"></div>
+      
+        <div class="nav">
+        
+</div>
+<div class="content">
+        <h2><strong>Scrypt</strong>
+          class
+        </h2>
+        
+<button id="show-inherited" class="show-inherited">Hide inherited</button>
+<div class="doc">
+<p>Implementation of SCrypt password based key derivation function. See the next link for info on how to choose N, r, and p:</p><ul><li><code>http://stackoverflow.com/questions/11126315/what-are-optimal-scrypt-work-factors</code></li></ul>
+<p>This implementation is based on Java implementation by Will Glozer, which can be found at:</p><ul><li><code>https://github.com/wg/scrypt</code></li></ul>
+</div>
+<h3>Implements</h3>
+<p>
+<span class="type-box"><span class="icon-class"></span><a href="../cipher.api/KeyDerivator.html">KeyDerivator</a></span></p>
+<div>
+<h3>Properties</h3>
+<div class="field"><h4 id="algorithmName">
+final <a href="http://api.dartlang.org/dart_core/String.html">String</a>         <strong>algorithmName</strong> <a class="anchor-link"
+            href="#algorithmName"
+            title="Permalink to Scrypt.algorithmName">#</a>
+        </h4>
+        <div class="doc">
+<div class="inherited">
+<p>Get this derivator's standard algorithm name.</p>
+<div class="docs-inherited-from">docs inherited from <a href="../cipher.api/KeyDerivator.html">KeyDerivator</a> </div></div>
+</div>
+</div>
+<div class="field"><h4 id="keySize">
+final <a href="http://api.dartlang.org/dart_core/int.html">int</a>         <strong>keySize</strong> <a class="anchor-link"
+            href="#keySize"
+            title="Permalink to Scrypt.keySize">#</a>
+        </h4>
+        <div class="doc">
+<div class="inherited">
+<p>Get this derivator key's output size.</p>
+<div class="docs-inherited-from">docs inherited from <a href="../cipher.api/KeyDerivator.html">KeyDerivator</a> </div></div>
+</div>
+</div>
+</div>
+<div>
+<h3>Methods</h3>
+<div class="method"><h4 id="deriveKey">
+<a href="http://api.dartlang.org/dart_core/int.html">int</a> <strong>deriveKey</strong>(<a href="http://api.dartlang.org/dart_typed_data/Uint8List.html">Uint8List</a> inp, <a href="http://api.dartlang.org/dart_core/int.html">int</a> inpOff, <a href="http://api.dartlang.org/dart_typed_data/Uint8List.html">Uint8List</a> out, <a href="http://api.dartlang.org/dart_core/int.html">int</a> outOff) <a class="anchor-link" href="#deriveKey"
+              title="Permalink to Scrypt.deriveKey">#</a></h4>
+<div class="doc">
+<div class="inherited">
+<p>Derive key from given input and put it in 
+<span class="param">out</span> at offset 
+<span class="param">outOff</span>.</p>
+<div class="docs-inherited-from">docs inherited from <a href="../cipher.api/KeyDerivator.html">KeyDerivator</a> </div></div>
+</div>
+</div>
+<div class="method"><h4 id="init">
+void <strong>init</strong>(<a href="../cipher.params.key_derivators.scrypt_parameters/ScryptParameters.html">ScryptParameters</a> params) <a class="anchor-link" href="#init"
+              title="Permalink to Scrypt.init">#</a></h4>
+<div class="doc">
+<div class="inherited">
+<p>Init the derivator with its initialization 
+<span class="param">params</span>. The type of <a class="crossref" href="../cipher.api/CipherParameters.html">CipherParameters</a> depends on the algorithm being used
+(see the documentation of each implementation to find out more).</p>
+<div class="docs-inherited-from">docs inherited from <a href="../cipher.api/KeyDerivator.html">KeyDerivator</a> </div></div>
+</div>
+</div>
+<div class="method"><h4 id="reset">
+void <strong>reset</strong>() <a class="anchor-link" href="#reset"
+              title="Permalink to Scrypt.reset">#</a></h4>
+<div class="doc">
+</div>
+</div>
+</div>
+        </div>
+        <div class="clear"></div>
+        </div>
+        <div class="footer">
+          <div>This page was generated at 2014-01-15 14:19:18.237</div>
+        </div>
+        <script async src="../client-live-nav.js"></script>
+        </body></html>
+        
