@@ -1,8 +1,13 @@
 all: clean depends build bundle
+all-drone: clean depends build-drone bundle-drone
 
 
 clean:
 	-rm -rf ../out
+	-rm ../test/all_client_tests.dart.js
+	-rm ../test/all_client_tests.dart.js.deps
+	-rm ../test/all_client_tests.dart.js.map
+	-rm ../test/all_client_tests.dart.precompiled.js
 
 
 depends:
@@ -10,17 +15,32 @@ depends:
 
 
 build: test doc
+build-drone: test-drone doc-drone
 
 
-test: depends
+test: test-client test-server
+test-drone: test-server
+
+
+test-server: depends
 	@echo "********************************************************************************"
-	@echo "RUNNING TESTS"
+	@echo "RUNNING SERVER TESTS"
 	@echo "********************************************************************************"
 
-	dart ../test/all_tests.dart
+	dart ../test/all_server_tests.dart
+
+
+test-client: depends
+	@echo "********************************************************************************"
+	@echo "RUNNING CLIENT TESTS"
+	@echo "********************************************************************************"
+
+	dart2js ../test/all_client_tests.dart -o ../test/all_client_tests.dart.js
+	open ../test/all_client_tests.html
 
 
 doc: doc-api doc-impl
+doc-drone: doc
 
 
 doc-api: depends
@@ -61,9 +81,11 @@ doc-impl: depends
 
 
 bundle: bundle-package bundle-doc
+bundle-drone: bundle-package-drone bundle-doc 
 
 
-bundle-package: test
+bundle-package: test bundle-package-drone
+bundle-package-drone: 
 	@echo "********************************************************************************"
 	@echo "MAKING PACKAGE BUNDLE"
 	@echo "********************************************************************************"
@@ -72,7 +94,6 @@ bundle-package: test
 	mkdir -p ../out/bundle
 
 	tar -c -z -C .. --exclude packages -f ../out/bundle/cipher.tar.gz LICENSE README.md pubspec.yaml bin/ lib/ licenses test/ tool/
-
 
 
 bundle-doc: doc

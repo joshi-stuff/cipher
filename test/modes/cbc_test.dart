@@ -7,15 +7,12 @@ library cipher.test.modes.cbc_test;
 import "dart:typed_data";
 
 import "package:cipher/cipher.dart";
-import "package:cipher/impl.dart";
+import "package:cipher/impl/base.dart";
 
 import "../test/block_cipher_tests.dart";
 import "../test/src/null_block_cipher.dart";
 
-/**
- * NOTE: the expected results for these tests are computed using the Java
- * version of Bouncy Castle
- */
+/// NOTE: the expected results for these tests are computed using the Java version of Bouncy Castle
 void main() {
 
   initCipher();
@@ -23,7 +20,6 @@ void main() {
 
   final iv = new Uint8List.fromList( [0x00,0x11,0x22,0x33,0x44,0x55,0x66,0x77,0x88,0x99,0xAA,0xBB,0xCC,0xDD,0xEE,0xFF] );
   final params = new ParametersWithIV(null, iv);
-  final underlyingCipher = new NullBlockCipher();
 
   runBlockCipherTests( new BlockCipher("Null/CBC"), params, [
 
