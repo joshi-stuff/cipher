@@ -173,6 +173,42 @@ class ECSignature implements Signature {
   int get hashCode {
     return r.hashCode+s.hashCode;
   }
+  
+  Uint8List encodeToDER() {
+    // lengths are encoded using a single byte because lengths are never longer than 127
+    var rBytes = r.toByteArray();
+    var sBytes = s.toByteArray();
+    return new Uint8List.fromList(new List<int>()
+      ..add(0x30) // start DER sequence
+      ..add(4 + rBytes.length + sBytes.length) // length of all that follows 
+      ..add(0x02) // start DER integer
+      ..add(rBytes.length) // length of integer r
+      ..addAll(rBytes)
+      ..add(0x02) // start DER integer
+      ..add(sBytes.length) // length of integer s
+      ..addAll(sBytes));
+  }
+  
+  factory ECSignature.fromDER(List<int> bytes) {
+    int offset = 0;
+    if(bytes[offset++] != 0x30)
+      throw new FormatException("Invalid DER encoding");
+    if(bytes[offset++] != bytes.length - 2)
+      throw new FormatException("Invalid DER encoding");
+    if(bytes[offset++] != 0x02)
+      throw new FormatException("Invalid DER encoding");
+    int rBytesLength = bytes[offset++];
+    var rBytes = bytes.sublist(offset, offset + rBytesLength);
+    offset += rBytesLength;
+    if(bytes[offset++] != 0x02)
+      throw new FormatException("Invalid DER encoding");
+    int sBytesLength = bytes[offset++];
+    var sBytes = bytes.sublist(offset, offset + sBytesLength);
+    offset += sBytesLength;
+    if(offset != bytes.length)
+      throw new FormatException("Invalid DER encoding");
+    return new ECSignature(new BigInteger.fromBytes(1, rBytes), new BigInteger.fromBytes(1, sBytes));
+  }
 
 }
 
