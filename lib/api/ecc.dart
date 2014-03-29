@@ -121,14 +121,15 @@ class ECPrivateKey extends ECAsymmetricKey implements PrivateKey {
   /// Create an ECC private key for the given d and domain parameters.
   ECPrivateKey(this.d, ECDomainParameters parameters) : super(parameters);
 
+  @override
   bool operator ==( other ) {
-    if( other==null ) return false;
-    if( other is! ECPrivateKey ) return false;
-    return (other.parameters==this.parameters) && (other.d==this.d);
+    if(other is! ECPrivateKey) return false;
+    return other.parameters == this.parameters && other.d == this.d;
   }
 
+  @override
   int get hashCode {
-    return parameters.hashCode+d.hashCode;
+    return parameters.hashCode ^ d.hashCode;
   }
 
 }
@@ -142,14 +143,15 @@ class ECPublicKey extends ECAsymmetricKey implements PublicKey {
   /// Create an ECC public key for the given Q and domain parameters.
   ECPublicKey( this.Q, ECDomainParameters parameters ) : super(parameters);
 
+  @override
   bool operator ==( other ) {
-    if( other==null ) return false;
-    if( other is! ECPublicKey ) return false;
-    return (other.parameters==this.parameters) && (other.Q==this.Q);
+    if(other is! ECPublicKey) return false;
+    return other.parameters == this.parameters && other.Q == this.Q;
   }
 
+  @override
   int get hashCode {
-    return parameters.hashCode+Q.hashCode;
+    return parameters.hashCode ^ Q.hashCode;
   }
 
 }
@@ -164,14 +166,15 @@ class ECSignature implements Signature {
 
   String toString() => "(${r.toString()},${s.toString()})";
 
+  @override
   bool operator ==(other) {
-    if( other==null ) return false;
-    if( other is! ECSignature ) return false;
-    return (other.r==this.r) && (other.s==this.s);
+    if(other is! ECSignature) return false;
+    return other.r == this.r && other.s == this.s;
   }
 
+  @override
   int get hashCode {
-    return r.hashCode+s.hashCode;
+    return r.hashCode ^ s.hashCode;
   }
 
 }
