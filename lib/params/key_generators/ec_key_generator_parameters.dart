@@ -20,4 +20,17 @@ class ECKeyGeneratorParameters extends KeyGeneratorParameters {
 
   ECDomainParameters get domainParameters => _domainParameters;
 
+  @override
+  int get hashCode {
+    return _domainParameters.hashCode;
+  }
+
+  @override
+  bool operator ==(ECKeyGeneratorParameters other) {
+    if(other is! ECKeyGeneratorParameters) return false;
+    // super.bitLength is included in the domain parameters,
+    // so should not be tested separately
+    return _domainParameters == other._domainParameters;
+  }
+
 }

@@ -13,6 +13,17 @@ abstract class AsymmetricKeyParameter<T extends AsymmetricKey> implements Cipher
 
   AsymmetricKeyParameter(this.key);
 
+  @override
+  int get hashCode {
+    return key.hashCode;
+  }
+
+  @override
+  bool operator ==(AsymmetricKeyParameter other) {
+    if(other is! AsymmetricKeyParameter) return false;
+    return key == other.key;
+  }
+
 }
 
 /// A [CipherParameters] to hold an asymmetric public key

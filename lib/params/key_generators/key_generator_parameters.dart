@@ -13,4 +13,15 @@ abstract class KeyGeneratorParameters implements CipherParameters {
 
   KeyGeneratorParameters(this.bitStrength);
 
+  @override
+  int get hashCode {
+    return bitStrength.hashCode;
+  }
+
+  @override
+  bool operator ==(KeyGeneratorParameters other) {
+    if(other is! KeyGeneratorParameters) return false;
+    return bitStrength == other.bitStrength;
+  }
+
 }

@@ -6,6 +6,7 @@ library cipher.params.parameters_with_iv;
 
 import "dart:typed_data";
 
+import "package:collection/equality.dart";
 import "package:cipher/api.dart";
 
 /**
@@ -18,5 +19,17 @@ class ParametersWithIV<UnderlyingParameters extends CipherParameters> implements
     final UnderlyingParameters parameters;
 
     ParametersWithIV( this.parameters, this.iv );
+
+    @override
+    int get hashCode {
+      return parameters.hashCode ^ new ListEquality().hash(iv);
+    }
+
+    @override
+    bool operator ==(ParametersWithIV other) {
+      if(other is! ParametersWithIV) return false;
+      return parameters == other.parameters &&
+      new ListEquality().equals(iv, other.iv);
+    }
 
 }

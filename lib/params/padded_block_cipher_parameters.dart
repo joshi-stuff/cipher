@@ -20,4 +20,16 @@ class PaddedBlockCipherParameters<
 
   PaddedBlockCipherParameters( this.underlyingCipherParameters, this.paddingCipherParameters );
 
+  @override
+  int get hashCode {
+    return underlyingCipherParameters.hashCode ^ paddingCipherParameters.hashCode;
+  }
+
+  @override
+  bool operator ==(PaddedBlockCipherParameters other) {
+    if(other is! PaddedBlockCipherParameters) return false;
+    return underlyingCipherParameters == other.underlyingCipherParameters &&
+    paddingCipherParameters == other.paddingCipherParameters;
+  }
+
 }
