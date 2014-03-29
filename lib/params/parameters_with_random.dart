@@ -13,4 +13,24 @@ class ParametersWithRandom<UnderlyingParameters extends CipherParameters> implem
 
   ParametersWithRandom(this.parameters,this.random);
 
+  //TODO hashCode and equals currently only check the runtimeType of the SecureRandom
+  //      is this enough?
+
+  /**
+   * Only the [runtimeType] of [random] is taken into account.
+   */
+  @override
+  int get hashCode {
+    return parameters.hashCode ^ random.runtimeType.hashCode;
+  }
+
+  /**
+   * Only the [runtimeType] of [random] is taken into account.
+   */
+  @override
+  bool operator ==(ParametersWithRandom other) {
+    if(other is! ParametersWithRandom) return false;
+    return parameters == other.parameters && random.runtimeType == other.random.runtimeType;
+  }
+
 }

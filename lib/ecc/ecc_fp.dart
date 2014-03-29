@@ -321,13 +321,15 @@ class ECCurve extends ecc.ECCurveBase {
     return new ECPoint( this, x, beta, true );
   }
 
+  @override
   bool operator ==(other) {
     if( other is ECCurve ) {
-      return q==other.q && a==other.a && b==other.b;
+      return q == other.q && a == other.a && b == other.b;
     }
     return false;
   }
 
+  @override
   int get hashCode => a.hashCode ^ b.hashCode ^ q.hashCode;
 }
 

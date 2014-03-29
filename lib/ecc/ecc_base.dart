@@ -7,6 +7,7 @@ library cipher.ecc.ecc_base;
 import "dart:typed_data";
 
 import 'package:bignum/bignum.dart';
+import "package:collection/equality.dart";
 import "package:cipher/api/ecc.dart";
 
 /// Implementation of [ECDomainParameters]
@@ -21,11 +22,32 @@ class ECDomainParametersImpl implements ECDomainParameters {
 
   ECDomainParametersImpl( this.domainName, this.curve, this.G, this.n, [this._h=null, this.seed=null] ) {
     if( _h==null ) {
-    _h = BigInteger.ONE;
+      _h = BigInteger.ONE;
     }
   }
 
   BigInteger get h => _h;
+
+  @override
+  int get hashCode {
+    return domainName.hashCode ^
+    curve.hashCode ^
+    (seed != null ? new ListEquality().hash(seed) : 0) ^
+    G.hashCode ^
+    n.hashCode ^
+    _h.hashCode;
+  }
+
+  @override
+  bool operator ==(ECDomainParameters other) {
+    if(other is! ECDomainParameters) return false;
+    return domainName == other.domainName &&
+    curve == other.curve &&
+    ( (seed == null && other.seed == null) || new ListEquality().equals(seed, other.seed) ) &&
+    G == other.G &&
+    n == other.n &&
+    _h == other._h;
+  }
 
 }
 
@@ -196,6 +218,17 @@ abstract class ECCurveBase implements ECCurve {
 
   BigInteger _fromArray( List<int> buf, int off, int length ) {
     return new BigInteger.fromBytes(1, buf.sublist(off, off+length));
+  }
+
+  @override
+  int get hashCode {
+    return _a.hashCode ^ _b.hashCode;
+  }
+
+  @override
+  bool operator ==(ECCurveBase other) {
+    if(other is! ECCurveBase) return false;
+    return _a == other._a && _b == other._b;
   }
 
 }
