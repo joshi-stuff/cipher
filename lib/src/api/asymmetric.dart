@@ -40,7 +40,7 @@ abstract class Signer {
   static final registry = new Registry<Signer>();
 
   /// Create the signer specified by the standard [algorithmName].
-  factory Signer( String algorithmName ) => registry.create(algorithmName);
+  factory Signer(String algorithmName) => registry.create(algorithmName);
 
   /// Get this signer's standard algorithm name.
   String get algorithmName;
@@ -49,18 +49,18 @@ abstract class Signer {
   void reset();
 
   /**
-   * Init the signer with its initialization [params]. The type of [CipherParameters] depends on the algorithm being used (see
-   * the documentation of each implementation to find out more).
+   * Init the signer with its initialization [params]. The type of [CipherParameters] depends on the
+   * algorithm being used (see the documentation of each implementation to find out more).
    *
    * Use the argument [forSigning] to tell the signer if you want to generate or verify signatures.
    */
-  void init( bool forSigning, CipherParameters params );
+  void init(bool forSigning, CipherParameters params);
 
   /// Sign the passed in [message] (usually the output of a hash function)
-  Signature generateSignature( Uint8List message );
+  Signature generateSignature(Uint8List message);
 
   /// Verify the [message] against the [signature].
-  bool verifySignature( Uint8List message, Signature signature );
+  bool verifySignature(Uint8List message, Signature signature);
 
 }
 
@@ -69,22 +69,14 @@ abstract class Signer {
  *
  * A [KeyGenerator] is used to create a pair of public and private keys.
  */
-abstract class KeyGenerator {
+abstract class KeyGenerator implements ParameterizedAlgorithm {
 
   /// The [Registry] for [KeyGenerator] algorithms
   static final registry = new Registry<KeyGenerator>();
 
   /// Create the key generator specified by the standard [algorithmName].
-  factory KeyGenerator( String algorithmName ) => registry.create(algorithmName);
-
-  /// Get this generator's standard algorithm name.
-  String get algorithmName;
-
-  /**
-   * Init the generator with its initialization [params]. The type of [CipherParameters] depends on the algorithm being used
-   * (see the documentation of each implementation to find out more).
-   */
-  void init( CipherParameters params );
+  factory KeyGenerator(String algorithmName, Map<Param, dynamic> params) =>
+      registry.create(algorithmName, params);
 
   /// Generate a new key pair.
   AsymmetricKeyPair generateKeyPair();
@@ -92,16 +84,15 @@ abstract class KeyGenerator {
 }
 
 /// Asymmetric block cipher engines are expected to conform to this interface.
-abstract class AsymmetricBlockCipher {
+abstract class AsymmetricBlockCipher implements ParameterizedAlgorithm, ResetableAlgorithm,
+    ProcessorAlgorithm {
 
   /// The [Registry] for [AsymmetricBlockCipher] algorithms
   static final registry = new Registry<AsymmetricBlockCipher>();
 
   /// Create the cipher specified by the standard [algorithmName].
-  factory AsymmetricBlockCipher( String algorithmName ) => registry.create(algorithmName);
-
-  /// Get this cipher's standard algorithm name.
-  String get algorithmName;
+  factory AsymmetricBlockCipher(String algorithmName, Map<Param, dynamic> params) =>
+      registry.create(algorithmName, params);
 
   /// Get this ciphers's maximum input block size.
   int get inputBlockSize;
@@ -109,23 +100,9 @@ abstract class AsymmetricBlockCipher {
   /// Get this ciphers's maximum output block size.
   int get outputBlockSize;
 
-  /// Reset the cipher to its original state.
-  void reset();
-
   /**
-   * Init the cipher with its initialization [params]. The type of [CipherParameters] depends on the algorithm being used (see
-   * the documentation of each implementation to find out more).
-   *
-   * Use the argument [forEncryption] to tell the cipher if you want to encrypt or decrypt data.
-   */
-  void init( bool forEncryption, CipherParameters params );
-
-  /// Process a whole block of [data] at once, returning the result in a new byte array.
-  Uint8List process(Uint8List data);
-
-  /**
-   * Process a block of [len] bytes given by [inp] and starting at offset [inpOff] and put the resulting cipher text in [out]
-   * beginning at position [outOff].
+   * Process a block of [len] bytes given by [inp] and starting at offset [inpOff] and put the
+   * resulting cipher text in [out] beginning at position [outOff].
    *
    * This method returns the total bytes put in the output buffer.
    */

@@ -34,11 +34,30 @@ class RSAPrivateKey extends RSAAsymmetricKey implements PrivateKey {
   final BigInteger p;
   final BigInteger q;
 
+  BigInteger _dP;
+  BigInteger _dQ;
+  BigInteger _qInv;
+
   /// Create an RSA private key for the given parameters.
   RSAPrivateKey(BigInteger modulus, BigInteger exponent, this.p, this.q) : super(modulus, exponent);
 
   /// Get private exponent [d] = e^-1
   BigInteger get d => exponent;
+
+  BigInteger get dP {
+    _computeCRT();
+    return _dP;
+  }
+
+  BigInteger get dQ {
+    _computeCRT();
+    return _dQ;
+  }
+
+  BigInteger get qInv {
+    _computeCRT();
+    return _qInv;
+  }
 
   bool operator ==( other ) {
     if( other==null ) return false;
@@ -47,6 +66,16 @@ class RSAPrivateKey extends RSAAsymmetricKey implements PrivateKey {
   }
 
   int get hashCode => modulus.hashCode+exponent.hashCode;
+
+  void _computeCRT() {
+    if (_dP == null) {
+      var pSub1 = (p - BigInteger.ONE);
+      var qSub1 = (q - BigInteger.ONE);
+      _dP = d.remainder(pSub1);
+      _dQ = d.remainder(qSub1);
+      _qInv = q.modInverse(p);
+    }
+  }
 
 }
 

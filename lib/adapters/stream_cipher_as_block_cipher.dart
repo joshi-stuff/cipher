@@ -15,24 +15,20 @@ import "package:cipher/block/base_block_cipher.dart";
 /// An adapter to convert an [StreamCipher] to a [BlockCipher]
 class StreamCipherAsBlockCipher extends BaseBlockCipher {
 
-  final StreamCipher streamCipher;
+  final StreamCipher _streamCipher;
   final int blockSize;
 
   /// Create a [BlockCipher] from [streamCipher] simulating the given [blockSize]
-  StreamCipherAsBlockCipher( this.blockSize, this.streamCipher );
-
-  String get algorithmName => streamCipher.algorithmName;
+  StreamCipherAsBlockCipher(Map<Param, dynamic> params, StreamCipher streamCipher, this.blockSize)
+      : super(streamCipher.algorithmName, params),
+        _streamCipher = streamCipher;
 
   void reset() {
-    streamCipher.reset();
+    _streamCipher.reset();
   }
 
-  void init(bool forEncryption, CipherParameters params) {
-    streamCipher.init(forEncryption, params);
-  }
-
-  int processBlock( Uint8List inp, int inpOff, Uint8List out, int outOff ) {
-    streamCipher.processBytes(inp, inpOff, blockSize, out, outOff);
+  int processBlock(Uint8List inp, int inpOff, Uint8List out, int outOff) {
+    _streamCipher.processBytes(inp, inpOff, blockSize, out, outOff);
     return blockSize;
   }
 

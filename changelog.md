@@ -1,8 +1,17 @@
-#### Version 0.8.0 (2014-??-??) (Dart SDK version ???)
+#### Version 0.8.0 (2014-10-16) (Dart SDK version 1.7.0-dev.4.5)
+
+* **[enh 86]** Spin off entropy to another project and make cipher independent of client/server.
+* **[enh 77]** Use CRT for RSA signing
 
 * **[bug 80]** PaddedBlockCipher doesn't add padding when data length is a multiple of the block 
                 size. This fix introduces a **BREAKING CHANGE** in PaddedBlockCipher specification.
                 Read its API documentation to know about the changes.
+* **[bug 78]** CBC mode resets underlying cipher when init() is called
+
+
+#### Version 0.7.1 (2014-05-11) (Dart SDK version 1.4.0-dev.6.2)
+
+* **[enh 84]** Dually license the project under Mozilla Public License as well as under LGPL.
 
 
 #### Version 0.7.0 (2014-03-22) (Dart SDK version 1.3.0-dev.5.2)

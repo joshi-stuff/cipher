@@ -15,15 +15,12 @@ void main() {
 
   initCipher();
 
-  runDigestTests( new Digest("SHA-1"), [
-
-    "Lorem ipsum dolor sit amet, consectetur adipiscing elit...",
-    "04e7635f310b9fbfa496ace02fa3ff9e7737f58c",
-
-    "En un lugar de La Mancha, de cuyo nombre no quiero acordarme...",
-    "cc8c8c2319221ae0b2a5dd5b26748a937c5855e4",
-
-  ]);
+  runDigestTests(
+      new Digest("SHA-1"),
+      [
+          "Lorem ipsum dolor sit amet, consectetur adipiscing elit...",
+          "04e7635f310b9fbfa496ace02fa3ff9e7737f58c",
+          "En un lugar de La Mancha, de cuyo nombre no quiero acordarme...",
+          "cc8c8c2319221ae0b2a5dd5b26748a937c5855e4",]);
 
 }
-

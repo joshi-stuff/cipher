@@ -11,6 +11,24 @@ import "dart:typed_data";
 
 import "package:cipher/api.dart";
 
+class Pbkdf2Param<T> extends Param<T> {
+
+  static const IterationCount = const Pbkdf2Param<int>("iterationCount");
+
+  const Pbkdf2Param(String name) : super(name);
+
+}
+
+class ScryptParam<T> extends Param<T> {
+
+  static const N = const Pbkdf2Param<int>("N");
+  static const r = const Pbkdf2Param<int>("r");
+  static const p = const Pbkdf2Param<int>("p");
+
+  const ScryptParam(String name) : super(name);
+
+}
+
 /// [CipherParameters] used by PBKDF2.
 class Pbkdf2Parameters extends CipherParameters {
 

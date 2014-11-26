@@ -10,9 +10,12 @@ library cipher.macs.base_mac;
 import "dart:typed_data";
 
 import "package:cipher/api.dart";
+import "package:cipher/algorithm/base_algorithm.dart";
 
 /// Base implementation of [Mac] which provides shared methods.
-abstract class BaseMac implements Mac {
+abstract class BaseMac extends BaseParameterizedNamedAlgorithm implements Mac {
+
+  BaseMac(String algorithmName, Map<Param, dynamic> params) : super(algorithmName, params);
 
   Uint8List process(Uint8List data) {
     update(data, 0, data.length);

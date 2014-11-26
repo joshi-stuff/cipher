@@ -10,9 +10,12 @@ library cipher.stream.base_stream_cipher;
 import "dart:typed_data";
 
 import "package:cipher/api.dart";
+import "package:cipher/algorithm/base_algorithm.dart";
 
 /// Base implementation of [StreamCipher] which provides shared methods.
-abstract class BaseStreamCipher implements StreamCipher {
+abstract class BaseStreamCipher extends BaseParameterizedNamedAlgorithm implements StreamCipher {
+
+  BaseStreamCipher(String algorithmName, Map<Param, dynamic> params) : super(algorithmName, params);
 
   Uint8List process(Uint8List data) {
     var out = new Uint8List(data.length);

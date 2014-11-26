@@ -17,11 +17,10 @@ class SHA512Digest extends LongSHA2FamilyDigest implements Digest {
 
   static const _DIGEST_LENGTH = 64;
 
-  SHA512Digest() {
+  SHA512Digest(Map<Param, dynamic> params) : super("SHA-512", params) {
     reset();
   }
 
-  final algorithmName = "SHA-512";
   final digestSize = _DIGEST_LENGTH;
 
   void reset() {
@@ -37,12 +36,12 @@ class SHA512Digest extends LongSHA2FamilyDigest implements Digest {
     H8.set(0x5be0cd19, 0x137e2179);
   }
 
-  int doFinal( Uint8List out, int outOff ) {
+  int doFinal(Uint8List out, int outOff) {
     finish();
 
     var view = new ByteData.view(out.buffer);
-    H1.pack(view, outOff     , Endianness.BIG_ENDIAN);
-    H2.pack(view, outOff +  8, Endianness.BIG_ENDIAN);
+    H1.pack(view, outOff, Endianness.BIG_ENDIAN);
+    H2.pack(view, outOff + 8, Endianness.BIG_ENDIAN);
     H3.pack(view, outOff + 16, Endianness.BIG_ENDIAN);
     H4.pack(view, outOff + 24, Endianness.BIG_ENDIAN);
     H5.pack(view, outOff + 32, Endianness.BIG_ENDIAN);
@@ -56,6 +55,5 @@ class SHA512Digest extends LongSHA2FamilyDigest implements Digest {
   }
 
 }
-
 
 

@@ -22,9 +22,10 @@ class ECDomainParametersImpl implements ECDomainParameters {
   final BigInteger n;
   BigInteger _h;
 
-  ECDomainParametersImpl( this.domainName, this.curve, this.G, this.n, [this._h=null, this.seed=null] ) {
-    if( _h==null ) {
-    _h = BigInteger.ONE;
+  ECDomainParametersImpl(this.domainName, this.curve, this.G, this.n, [this._h = null, this.seed =
+      null]) {
+    if (_h == null) {
+      _h = BigInteger.ONE;
     }
   }
 
@@ -41,10 +42,10 @@ abstract class ECFieldElementBase implements ECFieldElement {
   int get fieldSize;
   int get byteLength => ((fieldSize + 7) ~/ 8);
 
-  ECFieldElementBase operator +( ECFieldElementBase b );
-  ECFieldElementBase operator -( ECFieldElementBase b );
-  ECFieldElementBase operator *( ECFieldElementBase b );
-  ECFieldElementBase operator /( ECFieldElementBase b );
+  ECFieldElementBase operator +(ECFieldElementBase b);
+  ECFieldElementBase operator -(ECFieldElementBase b);
+  ECFieldElementBase operator *(ECFieldElementBase b);
+  ECFieldElementBase operator /(ECFieldElementBase b);
 
   ECFieldElementBase operator -();
 
@@ -67,20 +68,20 @@ abstract class ECPointBase implements ECPoint {
 
   PreCompInfo _preCompInfo;
 
-  ECPointBase( this.curve, this.x, this.y, this.isCompressed, [this._multiplier=_FpNafMultiplier] );
+  ECPointBase(this.curve, this.x, this.y, this.isCompressed, [this._multiplier = _FpNafMultiplier]);
 
   bool get isInfinity => (x == null && y == null);
 
-  void set preCompInfo( PreCompInfo preCompInfo ) {
+  void set preCompInfo(PreCompInfo preCompInfo) {
     _preCompInfo = preCompInfo;
   }
 
   bool operator ==(other) {
-    if( other is ECPointBase ) {
-      if( isInfinity ) {
+    if (other is ECPointBase) {
+      if (isInfinity) {
         return other.isInfinity;
       }
-      return x==other.x && y==other.y;
+      return x == other.x && y == other.y;
     }
     return false;
   }
@@ -88,8 +89,8 @@ abstract class ECPointBase implements ECPoint {
   String toString() => "($x,$y)";
 
   int get hashCode {
-    if( isInfinity ){
-        return 0;
+    if (isInfinity) {
+      return 0;
     }
     return x.hashCode ^ y.hashCode;
   }
@@ -108,19 +109,19 @@ abstract class ECPointBase implements ECPoint {
    * @return <code>k * this</code>.
    */
   ECPointBase operator *(BigInteger k) {
-    if( k.signum() < 0 ) {
+    if (k.signum() < 0) {
       throw new ArgumentError("The multiplicator cannot be negative");
     }
 
-    if( isInfinity ) {
+    if (isInfinity) {
       return this;
     }
 
-    if( k.signum() == 0 ) {
+    if (k.signum() == 0) {
       return curve.infinity;
     }
 
-    return _multiplier( this, k, _preCompInfo );
+    return _multiplier(this, k, _preCompInfo);
   }
 
 }
@@ -131,7 +132,7 @@ abstract class ECCurveBase implements ECCurve {
   ECFieldElementBase _a;
   ECFieldElementBase _b;
 
-  ECCurveBase( BigInteger a , BigInteger b ) {
+  ECCurveBase(BigInteger a, BigInteger b) {
     this._a = fromBigInteger(a);
     this._b = fromBigInteger(b);
   }
@@ -142,9 +143,9 @@ abstract class ECCurveBase implements ECCurve {
   int get fieldSize;
   ECPointBase get infinity;
 
-  ECFieldElementBase fromBigInteger( BigInteger x );
-  ECPointBase createPoint( BigInteger x, BigInteger y, [bool withCompression=false] );
-  ECPointBase decompressPoint( int yTilde, BigInteger X1 );
+  ECFieldElementBase fromBigInteger(BigInteger x);
+  ECPointBase createPoint(BigInteger x, BigInteger y, [bool withCompression = false]);
+  ECPointBase decompressPoint(int yTilde, BigInteger X1);
 
   /**
    * Decode a point on this curve from its ASN.1 encoding. The different
@@ -152,53 +153,53 @@ abstract class ECCurveBase implements ECCurve {
    * <code>F<sub>p</sub></code> (X9.62 s 4.2.1 pg 17).
    * @return The decoded point.
    */
-  ECPointBase decodePoint( List<int> encoded ) {
-      ECPointBase p = null;
-      int expectedLength = (fieldSize + 7) ~/ 8;
+  ECPointBase decodePoint(List<int> encoded) {
+    ECPointBase p = null;
+    int expectedLength = (fieldSize + 7) ~/ 8;
 
-      switch( encoded[0] ) {
-        case 0x00: // infinity
-            if (encoded.length != 1) {
-                throw new ArgumentError("Incorrect length for infinity encoding");
-            }
+    switch (encoded[0]) {
+      case 0x00: // infinity
+        if (encoded.length != 1) {
+          throw new ArgumentError("Incorrect length for infinity encoding");
+        }
 
-            p = infinity;
-            break;
+        p = infinity;
+        break;
 
-        case 0x02: // compressed
-        case 0x03: // compressed
-            if (encoded.length != (expectedLength + 1)) {
-                throw new ArgumentError("Incorrect length for compressed encoding");
-            }
+      case 0x02: // compressed
+      case 0x03: // compressed
+        if (encoded.length != (expectedLength + 1)) {
+          throw new ArgumentError("Incorrect length for compressed encoding");
+        }
 
-            int yTilde = encoded[0] & 1;
-            var X1 = _fromArray( encoded, 1, expectedLength );
+        int yTilde = encoded[0] & 1;
+        var X1 = _fromArray(encoded, 1, expectedLength);
 
-            p = decompressPoint(yTilde, X1);
-            break;
+        p = decompressPoint(yTilde, X1);
+        break;
 
-        case 0x04: // uncompressed
-        case 0x06: // hybrid
-        case 0x07: // hybrid
-            if (encoded.length != (2 * expectedLength + 1)) {
-                throw new ArgumentError("Incorrect length for uncompressed/hybrid encoding");
-            }
+      case 0x04: // uncompressed
+      case 0x06: // hybrid
+      case 0x07: // hybrid
+        if (encoded.length != (2 * expectedLength + 1)) {
+          throw new ArgumentError("Incorrect length for uncompressed/hybrid encoding");
+        }
 
-            BigInteger X1 = _fromArray(encoded, 1, expectedLength);
-            BigInteger Y1 = _fromArray(encoded, 1 + expectedLength, expectedLength);
+        BigInteger X1 = _fromArray(encoded, 1, expectedLength);
+        BigInteger Y1 = _fromArray(encoded, 1 + expectedLength, expectedLength);
 
-            p = createPoint(X1, Y1, false);
-            break;
+        p = createPoint(X1, Y1, false);
+        break;
 
-        default:
-            throw new ArgumentError("Invalid point encoding 0x" + encoded[0].toRadixString(16) );
-      }
+      default:
+        throw new ArgumentError("Invalid point encoding 0x" + encoded[0].toRadixString(16));
+    }
 
-      return p;
+    return p;
   }
 
-  BigInteger _fromArray( List<int> buf, int off, int length ) {
-    return new BigInteger.fromBytes(1, buf.sublist(off, off+length));
+  BigInteger _fromArray(List<int> buf, int off, int length) {
+    return new BigInteger.fromBytes(1, buf.sublist(off, off + length));
   }
 
 }
@@ -208,31 +209,31 @@ abstract class PreCompInfo {
 }
 
 /**
- * Interface for functions encapsulating a point multiplication algorithm for [ECPointBase]. Multiplies [p] by [k], i.e. [p] is
- * added [k] times to itself.
+ * Interface for functions encapsulating a point multiplication algorithm for [ECPointBase].
+ * Multiplies [p] by [k], i.e. [p] is added [k] times to itself.
  */
-typedef ECPointBase ECMultiplier( ECPointBase p, BigInteger k, PreCompInfo preCompInfo );
+typedef ECPointBase ECMultiplier(ECPointBase p, BigInteger k, PreCompInfo preCompInfo);
 
 /// Function implementing the NAF (Non-Adjacent Form) multiplication algorithm.
 ECPointBase _FpNafMultiplier(ECPointBase p, BigInteger k, PreCompInfo preCompInfo) {
-    // TODO Probably should try to add this
-    // BigInteger e = k.mod(n); // n == order of p
-    BigInteger e = k;
-    BigInteger h = e*BigInteger.THREE;
+  // TODO Probably should try to add this
+  // BigInteger e = k.mod(n); // n == order of p
+  BigInteger e = k;
+  BigInteger h = e * BigInteger.THREE;
 
-    ECPointBase neg = -p;
-    ECPointBase R = p;
+  ECPointBase neg = -p;
+  ECPointBase R = p;
 
-    for( var i=h.bitLength()-2 ; i>0 ; --i ) {
-      R = R.twice();
+  for (var i = h.bitLength() - 2; i > 0; --i) {
+    R = R.twice();
 
-      var hBit = h.testBit(i);
-      var eBit = e.testBit(i);
+    var hBit = h.testBit(i);
+    var eBit = e.testBit(i);
 
-      if( hBit!=eBit ) {
-          R += (hBit ? p : neg);
-      }
+    if (hBit != eBit) {
+      R += (hBit ? p : neg);
     }
+  }
 
-    return R;
+  return R;
 }

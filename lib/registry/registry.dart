@@ -7,40 +7,44 @@
 
 library cipher.registry;
 
+/// A factory of registered objects.
+typedef dynamic Factory(String name, Map params);
+
 /// A registry holds the map of factories indexed by algorithm names.
 class Registry<T> {
 
-  final _staticFactories = new Map<String,Function>();
-  final _dynamicFactories = new List<Function>();
+  final _staticFactories = new Map<String, Factory>();
+  final _dynamicFactories = new List<Factory>();
 
   /// Shorthand for [registerStaticFactory]
-  operator []= (String algorithmName, T factory(String) )
-    => registerStaticFactory(algorithmName, factory);
+  operator []=(String name, Factory factory) => registerStaticFactory(name, factory);
 
   /// Register an algorithm by its name.
-  void registerStaticFactory( String algorithmName, T factory(String) ) {
-    _staticFactories[algorithmName] = factory;
+  void registerStaticFactory(String name, Factory factory) {
+    _staticFactories[name] = factory;
   }
 
-  /// Register an algorithm factory method which can translate a variable algorithm name into an implementation.
-  void registerDynamicFactory( T factory(String) ) {
+
+  /// Register an algorithm factory method which can translate a variable algorithm name into an
+  /// implementation.
+  void registerDynamicFactory(Factory factory) {
     _dynamicFactories.add(factory);
   }
 
   /// Create an algorithm given its name
-  T create( String algorithmName ) {
-    var factory = _staticFactories[algorithmName];
-    if( factory!=null ) {
-      return factory(algorithmName);
+  T create(String name, Map params) {
+    var factory = _staticFactories[name];
+    if (factory != null) {
+      return factory(name, params);
     } else {
-      for( factory in _dynamicFactories ) {
-        var algorithm = factory(algorithmName);
-        if( algorithm!=null ) {
+      for (factory in _dynamicFactories) {
+        var algorithm = factory(name, params);
+        if (algorithm != null) {
           return algorithm;
         }
       }
     }
-    throw new UnsupportedError("No algorithm with that name registered: ${algorithmName}");
+    throw new UnsupportedError("No factory for objects with name '${name}' registered");
   }
 
 }

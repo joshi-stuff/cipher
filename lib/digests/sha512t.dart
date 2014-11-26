@@ -29,11 +29,14 @@ class SHA512tDigest extends LongSHA2FamilyDigest implements Digest {
   final _H7t = new Register64();
   final _H8t = new Register64();
 
-  SHA512tDigest(this.digestSize) {
-    if( digestSize >= 64 ) {
+  SHA512tDigest(Map<Param, dynamic> params, int digestSize)
+      : super("SHA-512/${digestSize*8}", params),
+        digestSize = digestSize {
+
+    if (digestSize >= 64) {
       throw new ArgumentError("Digest size cannot be >= 64 bytes (512 bits)");
     }
-    if( digestSize == 48 ) {
+    if (digestSize == 48) {
       throw new ArgumentError("Digest size cannot be 48 bytes (384 bits): use SHA-384 instead");
     }
 
@@ -41,8 +44,6 @@ class SHA512tDigest extends LongSHA2FamilyDigest implements Digest {
 
     reset();
   }
-
-  String get algorithmName => "SHA-512/${digestSize*8}";
 
   void reset() {
     super.reset();
@@ -63,8 +64,8 @@ class SHA512tDigest extends LongSHA2FamilyDigest implements Digest {
     var tmp = new Uint8List(64);
 
     var view = new ByteData.view(tmp.buffer);
-    H1.pack(view,  0, Endianness.BIG_ENDIAN);
-    H2.pack(view,  8, Endianness.BIG_ENDIAN);
+    H1.pack(view, 0, Endianness.BIG_ENDIAN);
+    H2.pack(view, 8, Endianness.BIG_ENDIAN);
     H3.pack(view, 16, Endianness.BIG_ENDIAN);
     H4.pack(view, 24, Endianness.BIG_ENDIAN);
     H5.pack(view, 32, Endianness.BIG_ENDIAN);
@@ -72,7 +73,7 @@ class SHA512tDigest extends LongSHA2FamilyDigest implements Digest {
     H7.pack(view, 48, Endianness.BIG_ENDIAN);
     H8.pack(view, 56, Endianness.BIG_ENDIAN);
 
-    out.setRange( outOff, outOff+digestSize, tmp );
+    out.setRange(outOff, outOff + digestSize, tmp);
 
     reset();
 
@@ -80,14 +81,30 @@ class SHA512tDigest extends LongSHA2FamilyDigest implements Digest {
   }
 
   void _generateIVs(int bitLength) {
-    H1..set(0x6a09e667, 0xf3bcc908)..xor(_H_MASK);
-    H2..set(0xbb67ae85, 0x84caa73b)..xor(_H_MASK);
-    H3..set(0x3c6ef372, 0xfe94f82b)..xor(_H_MASK);
-    H4..set(0xa54ff53a, 0x5f1d36f1)..xor(_H_MASK);
-    H5..set(0x510e527f, 0xade682d1)..xor(_H_MASK);
-    H6..set(0x9b05688c, 0x2b3e6c1f)..xor(_H_MASK);
-    H7..set(0x1f83d9ab, 0xfb41bd6b)..xor(_H_MASK);
-    H8..set(0x5be0cd19, 0x137e2179)..xor(_H_MASK);
+    H1
+        ..set(0x6a09e667, 0xf3bcc908)
+        ..xor(_H_MASK);
+    H2
+        ..set(0xbb67ae85, 0x84caa73b)
+        ..xor(_H_MASK);
+    H3
+        ..set(0x3c6ef372, 0xfe94f82b)
+        ..xor(_H_MASK);
+    H4
+        ..set(0xa54ff53a, 0x5f1d36f1)
+        ..xor(_H_MASK);
+    H5
+        ..set(0x510e527f, 0xade682d1)
+        ..xor(_H_MASK);
+    H6
+        ..set(0x9b05688c, 0x2b3e6c1f)
+        ..xor(_H_MASK);
+    H7
+        ..set(0x1f83d9ab, 0xfb41bd6b)
+        ..xor(_H_MASK);
+    H8
+        ..set(0x5be0cd19, 0x137e2179)
+        ..xor(_H_MASK);
 
     updateByte(0x53);
     updateByte(0x48);
@@ -98,19 +115,17 @@ class SHA512tDigest extends LongSHA2FamilyDigest implements Digest {
     updateByte(0x32);
     updateByte(0x2F);
 
-    if( bitLength > 100 ) {
+    if (bitLength > 100) {
       updateByte(bitLength ~/ 100 + 0x30);
       bitLength = bitLength % 100;
       updateByte(bitLength ~/ 10 + 0x30);
       bitLength = bitLength % 10;
       updateByte(bitLength + 0x30);
-    }
-    else if( bitLength > 10 ) {
+    } else if (bitLength > 10) {
       updateByte(bitLength ~/ 10 + 0x30);
       bitLength = bitLength % 10;
       updateByte(bitLength + 0x30);
-    }
-    else {
+    } else {
       updateByte(bitLength + 0x30);
     }
 
@@ -127,6 +142,5 @@ class SHA512tDigest extends LongSHA2FamilyDigest implements Digest {
   }
 
 }
-
 
 

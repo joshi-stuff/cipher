@@ -10,33 +10,23 @@ library cipher.key_generators.ec_key_generator;
 import "package:bignum/bignum.dart";
 
 import "package:cipher/api.dart";
+import "package:cipher/algorithm/base_algorithm.dart";
 import "package:cipher/ecc/api.dart";
 import "package:cipher/key_generators/api.dart";
 
 /// Abstract [CipherParameters] to init an ECC key generator.
-class ECKeyGenerator implements KeyGenerator {
+class ECKeyGenerator extends BaseParameterizedNamedAlgorithm implements KeyGenerator {
 
-  ECDomainParameters _params;
-  SecureRandom _random;
+  final SecureRandom _random;
 
-  String get algorithmName => "EC";
+  final ECDomainParameters _domainParameters;
 
-  void init(CipherParameters params) {
-    ECKeyGeneratorParameters ecparams;
-
-    if (params is ParametersWithRandom) {
-      _random = params.random;
-      ecparams = params.parameters;
-    } else {
-      _random = new SecureRandom();
-      ecparams = params;
-    }
-
-    _params = ecparams.domainParameters;
-  }
+  ECKeyGenerator(Map<Param, dynamic> params, this._random)
+      : super("EC", params),
+        _domainParameters = params[ECKeyGeneratorParam.DomainParameters];
 
   AsymmetricKeyPair generateKeyPair() {
-    var n = _params.n;
+    var n = _domainParameters.n;
     var nBitLength = n.bitLength();
     var d;
 
@@ -44,10 +34,11 @@ class ECKeyGenerator implements KeyGenerator {
       d = _random.nextBigInteger(nBitLength);
     } while (d == BigInteger.ZERO || (d >= n));
 
-    var Q = _params.G * d;
+    var Q = _domainParameters.G * d;
 
-    return new AsymmetricKeyPair(new ECPublicKey(Q, _params), new ECPrivateKey(d, _params));
+    return new AsymmetricKeyPair(
+        new ECPublicKey(Q, _domainParameters),
+        new ECPrivateKey(d, _domainParameters));
   }
 
 }
-

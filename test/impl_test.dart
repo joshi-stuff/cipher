@@ -13,6 +13,171 @@ import "package:unittest/unittest.dart";
 
 import './test/registry_tests.dart';
 
+class Algol implements Algorithm {
+
+  final String _name;
+  final Map<Param, dynamic> _params;
+  final Algol _chainedAlgorithm;
+
+  Algol(this._name, this._params, this._chainedAlgorithm);
+
+  String toString() {
+    StringBuffer sb = new StringBuffer();
+
+    sb.write(_name);
+    sb.write(": ");
+    sb.write(_params);
+    sb.write("\n");
+
+    if (_chainedAlgorithm != null) {
+      sb.write(_chainedAlgorithm.toString());
+    }
+
+    return sb.toString();
+  }
+}
+
+void main() {
+  var registry = new Registry<Algorithm>();
+
+  registry.registerDynamicFactory(
+      new ConcreteAlgorithmFactory(
+          "A",
+          (params, chainedAlgorithm) => new Algol("A", params, chainedAlgorithm),
+          new ConcreteAlgorithmFactory(
+              "B",
+              (params, chainedAlgorithm) => new Algol("B", params, chainedAlgorithm),
+              new ConcreteAlgorithmFactory(
+                  "C",
+                  (params, chainedAlgorithm) => new Algol("C", params, chainedAlgorithm),
+                  new ConcreteAlgorithmFactory(
+                      "D",
+                      (params, chainedAlgorithm) => new Algol("D", params, chainedAlgorithm))))));
+
+  var params = {
+    Param.Key: [1, 2, 3],
+    Param.Chain: [{
+        Param.BitStrength: 7
+      }, {
+        Param.BlockSize: 8
+      }, {
+        Param.ForEncryption: true,
+        Param.IV: [1, 2]
+      }, {
+        Param.Salt: [1, 2, 3, 4, 5]
+      }]
+  };
+
+  var algorithm = registry.create("A/B/C/D", params);
+
+  print(algorithm);
+
+//  var algorithm2 = registry.create("B/C/D", params);
+
+//  print(algorithm2);
+}
+
+typedef Algorithm NamedCreator(String name, Map<Param, dynamic> params, Algorithm chainedAlgorithm);
+typedef Algorithm UnnamedCreator(Map<Param, dynamic> params, Algorithm chainedAlgorithm);
+
+abstract class Factory {
+
+  Factory _nextFactory;
+
+  Factory([this._nextFactory]);
+
+  Algorithm call(String name, Map<Param, dynamic> params, [Algorithm chainedAlgorithm]) {
+    var names = name.split("/");
+
+    var unchainedParams = Param.split(params, names.length);
+
+    Algorithm algorithm = _create(names.first, unchainedParams.first, chainedAlgorithm);
+
+    if (_nextFactory == null) {
+      return algorithm;
+    } else {
+      return _nextFactory.call(
+          names.sublist(1).join("/"),
+          Param.merge(unchainedParams.sublist(1)),
+          algorithm);
+    }
+  }
+
+  Algorithm _create(String name, Map<Param, dynamic> params, Algorithm chainedAlgorithm);
+
+}
+
+class ConcreteAlgorithmFactory extends Factory {
+
+  final String _algorithmName;
+  final UnnamedCreator _unnamedCreator;
+
+  ConcreteAlgorithmFactory(this._algorithmName, this._unnamedCreator, [Factory nextFactory])
+      : super(nextFactory);
+
+  Algorithm _create(String name, Map<Param, dynamic> params, Algorithm chainedAlgorithm) {
+    if (name != _algorithmName) return null;
+
+    return _unnamedCreator(params, chainedAlgorithm);
+  }
+
+}
+
+
+
+
+
+
+
+
+
+
+
+/*
+
+class MultiplexFactory extends Factory {
+
+  final Map<int, NamedCreator> _namedCreators;
+
+  MultiplexFactory(this._namedCreators);
+
+  Algorithm _create(String name, Map<Param, dynamic> params, Algorithm chainedAlgorithm) {
+    var names = name.split("/");
+    var namedCreator = _namedCreators[names.length];
+
+    if (namedCreator != null) {
+      return namedCreator(name, params, chainedAlgorithm);
+    }
+
+    return null;
+  }
+
+}
+
+class SecureRandomFactory extends GenericAlgorithmFactory {
+
+  SecureRandomFactory() : super((name, params, chainedAlgorithm) => new SecureRandom(name, params));
+
+}
+
+class GenericAlgorithmFactory extends Factory {
+
+  final NamedCreator _namedCreator;
+
+  GenericAlgorithmFactory(this._namedCreator);
+
+  Algorithm _create(String name, Map<Param, dynamic> params, Algorithm chainedAlgorithm) {
+    var names = name.split("/");
+
+    var unchainedParams = Param.split(params, names.length);
+
+    return _namedCreator(name, unchainedParams.last, chainedAlgorithm);
+  }
+
+}
+*/
+
+/*
 void main() {
 
   initCipher();
@@ -120,3 +285,4 @@ void main() {
   });
 
 }
+*/

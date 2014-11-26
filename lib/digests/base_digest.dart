@@ -10,9 +10,12 @@ library cipher.digests.base_digest;
 import "dart:typed_data";
 
 import "package:cipher/api.dart";
+import "package:cipher/algorithm/base_algorithm.dart";
 
 /// Base implementation of [Digest] which provides shared methods.
-abstract class BaseDigest implements Digest {
+abstract class BaseDigest extends BaseParameterizedNamedAlgorithm implements Digest {
+
+  BaseDigest(String algorithmName, Map<Param, dynamic> params) : super(algorithmName, params);
 
   Uint8List process(Uint8List data) {
     update(data, 0, data.length);

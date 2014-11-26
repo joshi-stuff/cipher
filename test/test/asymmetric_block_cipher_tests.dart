@@ -12,39 +12,55 @@ import "package:unittest/unittest.dart";
 
 import "./src/helpers.dart";
 
-void runAsymmetricBlockCipherTests(AsymmetricBlockCipher cipher, CipherParameters pubParams(), CipherParameters privParams(),
-                                   List<String> plainCipherTextTuples ) {
+void runAsymmetricBlockCipherTests(String algorithmName, Map<Param, dynamic> pubParams, Map<Param,
+    dynamic> privParams, List<String> plainCipherTextTuples) {
 
-  group( "${cipher.algorithmName}:", () {
+  group("${algorithmName}:", () {
 
-    group( "encrypt:", () {
-      for( var i=0 ; i<plainCipherTextTuples.length ; i+=3 ) {
+    group("encrypt:", () {
+      final pubCipher = new AsymmetricBlockCipher(algorithmName, {}
+          ..[Param.ForEncryption] = true
+          ..addAll(pubParams));
+      final privCipher = new AsymmetricBlockCipher(algorithmName, {}
+          ..[Param.ForEncryption] = true
+          ..addAll(privParams));
+
+      for (var i = 0; i < plainCipherTextTuples.length; i += 3) {
         var plainText = plainCipherTextTuples[i];
-        var publicCipherText = plainCipherTextTuples[i+1];
-        var privateCipherText = plainCipherTextTuples[i+2];
+        var publicCipherText = plainCipherTextTuples[i + 1];
+        var privateCipherText = plainCipherTextTuples[i + 2];
 
-        test( "public: ${formatAsTruncated(plainText)}", () =>
-          _runCipherTest( cipher, pubParams, plainText, publicCipherText )
-        );
-        test( "private: ${formatAsTruncated(plainText)}", () =>
-          _runCipherTest( cipher, privParams, plainText, privateCipherText )
-        );
+        test("public: ${formatAsTruncated(plainText)}", () {
+          _runCipherTest(pubCipher, plainText, publicCipherText);
+        });
+
+        test("private: ${formatAsTruncated(plainText)}", () {
+          _runCipherTest(privCipher, plainText, privateCipherText);
+        });
 
       }
     });
 
-    group( "decrypt:", () {
-      for( var i=0 ; i<plainCipherTextTuples.length ; i+=3 ) {
-        var plainText = plainCipherTextTuples[i];
-        var publicCipherText = plainCipherTextTuples[i+1];
-        var privateCipherText = plainCipherTextTuples[i+2];
+    group("decrypt:", () {
+      final pubCipher = new AsymmetricBlockCipher(algorithmName, {}
+          ..[Param.ForEncryption] = false
+          ..addAll(pubParams));
+      final privCipher = new AsymmetricBlockCipher(algorithmName, {}
+          ..[Param.ForEncryption] = false
+          ..addAll(privParams));
 
-        test( "public: ${formatAsTruncated(plainText)}", () =>
-          _runDecipherTest( cipher, pubParams, privateCipherText, plainText )
-        );
-        test( "private: ${formatAsTruncated(plainText)}", () =>
-          _runDecipherTest( cipher, privParams, publicCipherText, plainText )
-        );
+      for (var i = 0; i < plainCipherTextTuples.length; i += 3) {
+        var plainText = plainCipherTextTuples[i];
+        var publicCipherText = plainCipherTextTuples[i + 1];
+        var privateCipherText = plainCipherTextTuples[i + 2];
+
+        test("public: ${formatAsTruncated(plainText)}", () {
+          _runDecipherTest(pubCipher, privateCipherText, plainText);
+        });
+
+        test("private: ${formatAsTruncated(plainText)}", () {
+          _runDecipherTest(privCipher, publicCipherText, plainText);
+        });
 
       }
     });
@@ -53,27 +69,26 @@ void runAsymmetricBlockCipherTests(AsymmetricBlockCipher cipher, CipherParameter
 
 }
 
-void _runCipherTest(AsymmetricBlockCipher cipher, CipherParameters params(), String plainTextString,
-                    String expectedHexCipherText) {
+void _runCipherTest(AsymmetricBlockCipher cipher, String plainTextString,
+    String expectedHexCipherText) {
 
   cipher.reset();
-  cipher.init(true, params());
 
-  var plainText = createUint8ListFromString( plainTextString );
+  var plainText = createUint8ListFromString(plainTextString);
   var out = cipher.process(plainText);
   var hexOut = formatBytesAsHexString(out);
 
-  expect( hexOut, equals(expectedHexCipherText) );
+  expect(hexOut, equals(expectedHexCipherText));
 }
 
-void _runDecipherTest(AsymmetricBlockCipher cipher, CipherParameters params(), String hexCipherText,
-                      String expectedPlainTextString ) {
+void _runDecipherTest(AsymmetricBlockCipher cipher, String hexCipherText,
+    String expectedPlainTextString) {
+
   cipher.reset();
-  cipher.init(false, params());
 
   var cipherText = createUint8ListFromHexString(hexCipherText);
   var out = cipher.process(cipherText);
   var plainText = new String.fromCharCodes(out);
 
-  expect( plainText, equals(expectedPlainTextString) );
+  expect(plainText, equals(expectedPlainTextString));
 }

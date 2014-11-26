@@ -14,38 +14,36 @@ import "package:unittest/unittest.dart";
 
 import "./src/helpers.dart";
 
-void runPaddingTest( Padding pad, CipherParameters params,
-                     String unpadData, int padLength, String padData ) {
+void runPaddingTest(String algorithmName, Map<Param, dynamic> params, String unpadData,
+    String padData) {
 
-  group( "${pad.algorithmName}:", () {
+  final padder = new Padding(algorithmName, <Param, dynamic>{}
+      ..[Param.ForPadding] = true
+      ..addAll(params));
 
-    test( "addPadding: $unpadData", () {
+  final unpadder = new Padding(algorithmName, <Param, dynamic>{}
+      ..[Param.ForPadding] = false
+      ..addAll(params));
 
-      var expectedBytes = createUint8ListFromHexString( padData );
-      var dataBytes = new Uint8List( padLength )
-        ..setAll( 0, unpadData.codeUnits )
-      ;
+  group("${algorithmName}:", () {
+    test("pad: $unpadData", () {
 
-      pad.init( params );
-      var ret = pad.addPadding( dataBytes, unpadData.length );
+      var dataBytes = new Uint8List.fromList(unpadData.codeUnits);
+      var ret = padder.process(dataBytes);// addPadding(dataBytes, unpadData.length);
 
-      expect( ret, equals( padLength-unpadData.length ) );
-      expect( dataBytes, equals(expectedBytes) );
-
-    });
-
-    test( "padCount: $padData", () {
-
-      var dataBytes = createUint8ListFromHexString( padData );
-
-      pad.init( params );
-      var ret = pad.padCount( dataBytes );
-
-      expect( ret, equals( padLength-unpadData.length ) );
+      var expectedBytes = createUint8ListFromHexString(padData);
+      expect(ret, equals(expectedBytes));
 
     });
 
+    test("unpad: $padData", () {
+
+      var dataBytes = createUint8ListFromHexString(padData);
+      var ret = unpadder.process(dataBytes);
+
+      var expectedBytes = new Uint8List.fromList(unpadData.codeUnits);
+      expect(ret, equals(expectedBytes));
+
+    });
   });
-
 }
-

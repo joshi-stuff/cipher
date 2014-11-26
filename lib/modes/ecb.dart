@@ -15,23 +15,19 @@ import "package:cipher/block/base_block_cipher.dart";
 /// Implementation of Electronic Code Book (ECB) mode on top of a [BlockCipher].
 class ECBBlockCipher extends BaseBlockCipher {
 
-  final BlockCipher _underlyingCipher;
+  final BlockCipher _cipher;
 
-  ECBBlockCipher(this._underlyingCipher);
+  ECBBlockCipher(Map<Param, dynamic> params, BlockCipher cipher)
+      : super("${cipher.algorithmName}/ECB", params),
+        _cipher = cipher;
 
-  String get algorithmName => "${_underlyingCipher.algorithmName}/ECB";
-
-  int get blockSize => _underlyingCipher.blockSize;
+  int get blockSize => _cipher.blockSize;
 
   void reset() {
-    _underlyingCipher.reset();
+    _cipher.reset();
   }
 
-  void init(bool forEncryption, CipherParameters params) {
-    _underlyingCipher.init(forEncryption, params);
-  }
-
-  int processBlock(Uint8List inp, int inpOff, Uint8List out, int outOff)
-    => _underlyingCipher.processBlock(inp, inpOff, out, outOff);
+  int processBlock(Uint8List inp, int inpOff, Uint8List out, int outOff) =>
+      _cipher.processBlock(inp, inpOff, out, outOff);
 
 }

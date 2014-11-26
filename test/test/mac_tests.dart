@@ -12,20 +12,18 @@ import "package:unittest/unittest.dart";
 
 import "./src/helpers.dart";
 
-void runMacTests( Mac mac, List<String> plainDigestTextPairs ) {
+void runMacTests(Mac mac, List<String> plainDigestTextPairs) {
 
-  group( "${mac.algorithmName}:", () {
+  group("${mac.algorithmName}:", () {
 
-    group( "digest:", () {
+    group("digest:", () {
 
-      for( var i=0 ; i<plainDigestTextPairs.length ; i+=2 ) {
+      for (var i = 0; i < plainDigestTextPairs.length; i += 2) {
 
         var plainText = plainDigestTextPairs[i];
-        var digestText = plainDigestTextPairs[i+1];
+        var digestText = plainDigestTextPairs[i + 1];
 
-        test( "${formatAsTruncated(plainText)}", () =>
-          _runMacTest( mac, plainText, digestText )
-        );
+        test("${formatAsTruncated(plainText)}", () => _runMacTest(mac, plainText, digestText));
 
       }
     });
@@ -34,13 +32,12 @@ void runMacTests( Mac mac, List<String> plainDigestTextPairs ) {
 
 }
 
-void _runMacTest( Mac mac, String plainTextString, String expectedHexDigestText ) {
+void _runMacTest(Mac mac, String plainTextString, String expectedHexDigestText) {
   mac.reset();
 
-  var plainText = createUint8ListFromString( plainTextString );
+  var plainText = createUint8ListFromString(plainTextString);
   var out = mac.process(plainText);
   var hexOut = formatBytesAsHexString(out);
 
-  expect( hexOut, equals(expectedHexDigestText) );
+  expect(hexOut, equals(expectedHexDigestText));
 }
-

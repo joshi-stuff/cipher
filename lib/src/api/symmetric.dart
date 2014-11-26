@@ -8,40 +8,18 @@
 part of cipher.api;
 
 /// Block cipher engines are expected to conform to this interface.
-abstract class BlockCipher {
+abstract class BlockCipher implements ParameterizedAlgorithm, ResetableAlgorithm, ProcessorAlgorithm
+    {
 
   /// The [Registry] for [BlockCipher] algorithms
   static final registry = new Registry<BlockCipher>();
 
   /// Create the cipher specified by the standard [algorithmName].
-  factory BlockCipher(String algorithmName) => registry.create(algorithmName);
-
-  /// Get this cipher's standard algorithm name.
-  String get algorithmName;
+  factory BlockCipher(String algorithmName, Map<Param, dynamic> params) =>
+      registry.create(algorithmName, params);
 
   /// Get this ciphers's block size.
   int get blockSize;
-
-  /// Reset the cipher to its original state.
-  void reset();
-
-  /**
-   * Init the cipher with its initialization [params]. The type of
-   * [CipherParameters] depends on the algorithm being used (see the
-   * documentation of each implementation to find out more).
-   *
-   * Use the argument [forEncryption] to tell the cipher if you want to encrypt
-   * or decrypt data.
-   */
-  void init(bool forEncryption, CipherParameters params);
-
-  /**
-   * Process a whole block of [blockSize] bytes stored in [data] at once, returning the result in a
-   * new byte array.
-   *
-   * This call is equivalent to [processBlock] but it allocates the array under the hood.
-   */
-  Uint8List process(Uint8List data);
 
   /**
    * Process a whole block of data given by [inp] and starting at offset
@@ -71,27 +49,29 @@ abstract class BlockCipher {
  * [processBlock] and [doFinal] which are different depending on whether you are encrypting or
  * decrypting and also depending on the data length being a multiple of the cipher's block size.
  */
-abstract class PaddedBlockCipher implements BlockCipher {
+abstract class PaddedBlockCipher implements ParameterizedAlgorithm, ResetableAlgorithm,
+    ProcessorAlgorithm {
 
   /// The [Registry] for [PaddedBlockCipher] algorithms
   static final registry = new Registry<PaddedBlockCipher>();
 
   /// Create the padded block cipher specified by the standard [algorithmName].
-  factory PaddedBlockCipher(String algorithmName) => registry.create(algorithmName);
+  factory PaddedBlockCipher(String algorithmName, Map<Param, dynamic> params) =>
+      registry.create(algorithmName, params);
 
-  /// Get the underlying [Padding] used by this cipher.
-  Padding get padding;
-
-  /// Get the underlying [BlockCipher] used by this cipher.
-  BlockCipher get cipher;
+  /// Get this ciphers's block size.
+  int get blockSize;
 
   /**
-   * Process a whole block of [data] at once, returning the result in a new byte array.
+   * Process a whole block of data given by [inp] and starting at offset
+   * [inpOff].
    *
-   * This call does as many calls to [processBlock] as needed to process all the given data and a
-   * final one to [doFinal] so that the padding can do its job.
+   * The resulting cipher text is put in [out] beginning at position [outOff].
+   *
+   * This method returns the total bytes processed (which is the same as the
+   * block size of the algorithm).
    */
-  Uint8List process(Uint8List data);
+  int processBlock(Uint8List inp, int inpOff, Uint8List out, int outOff);
 
   /**
    * Process the last block of data given by [inp] and starting at offset [inpOff] and pad it as
@@ -111,35 +91,18 @@ abstract class PaddedBlockCipher implements BlockCipher {
 }
 
 /// The interface stream ciphers conform to.
-abstract class StreamCipher {
+abstract class StreamCipher implements ParameterizedAlgorithm, ResetableAlgorithm,
+    ProcessorAlgorithm {
 
   /// The [Registry] for [StreamCipher] algorithms
   static final registry = new Registry<StreamCipher>();
 
   /// Create the cipher specified by the standard [algorithmName].
-  factory StreamCipher(String algorithmName) => registry.create(algorithmName);
-
-  /// Get this cipher's standard algorithm name.
-  String get algorithmName;
-
-  /// Reset the cipher to its original state.
-  void reset();
-
-  /**
-   * Init the cipher with its initialization [params]. The type of
-   * [CipherParameters] depends on the algorithm being used (see the
-   * documentation of each implementation to find out more).
-   *
-   * Use the argument [forEncryption] to tell the cipher if you want to encrypt
-   * or decrypt data.
-   */
-  void init(bool forEncryption, CipherParameters params);
-
-  /// Process a whole block of [data] at once, returning the result in a new byte array.
-  Uint8List process(Uint8List data);
+  factory StreamCipher(String algorithmName, Map<Param, dynamic> params) =>
+      registry.create(algorithmName, params);
 
   /// Process one byte of data given by [inp] and return its encrypted value.
-  int returnByte(int inp);
+  int processByte(int inp);
 
   /**
    * Process [len] bytes of data given by [inp] and starting at offset [inpOff].
@@ -150,31 +113,17 @@ abstract class StreamCipher {
 }
 
 /// The interface that a MAC (message authentication code) conforms to.
-abstract class Mac {
+abstract class Mac implements ParameterizedAlgorithm, ResetableAlgorithm, ProcessorAlgorithm {
 
   /// The [Registry] for [Mac] algorithms
   static final registry = new Registry<Mac>();
 
   /// Create the MAC specified by the standard [algorithmName].
-  factory Mac(String algorithmName) => registry.create(algorithmName);
-
-  /// Get this MAC's standard algorithm name.
-  String get algorithmName;
+  factory Mac(String algorithmName, Map<Param, dynamic> params) =>
+      registry.create(algorithmName, params);
 
   /// Get this MAC's output size.
   int get macSize;
-
-  /// Reset the MAC to its original state.
-  void reset();
-
-  /**
-   * Init the MAC with its initialization [params]. The type of [CipherParameters] depends on the algorithm being used (see
-   * the documentation of each implementation to find out more).
-   */
-  void init(CipherParameters params);
-
-  /// Process a whole block of [data] at once, returning the result in a new byte array.
-  Uint8List process(Uint8List data);
 
   /// Add one byte of data to the MAC input.
   void updateByte(int inp);
@@ -196,30 +145,21 @@ abstract class Mac {
 /**
  * The interface that a symmetric key derivator conforms to.
  *
- * A [KeyDerivator] is normally used to convert some master data (like a password, for instance) to a symmetric key.
+ * A [KeyDerivator] is normally used to convert some master data (like a password, for instance) to
+ * a symmetric key.
  */
-abstract class KeyDerivator {
+abstract class KeyDerivator implements ParameterizedAlgorithm, ResetableAlgorithm,
+    ProcessorAlgorithm {
 
   /// The [Registry] for [KeyDerivator] algorithms
   static final registry = new Registry<KeyDerivator>();
 
   /// Create the key derivator specified by the standard [algorithmName].
-  factory KeyDerivator(String algorithmName) => registry.create(algorithmName);
-
-  /// Get this derivator's standard algorithm name.
-  String get algorithmName;
+  factory KeyDerivator(String algorithmName, Map<Param, dynamic> params) =>
+      registry.create(algorithmName, params);
 
   /// Get this derivator key's output size.
   int get keySize;
-
-  /**
-   * Init the derivator with its initialization [params]. The type of [CipherParameters] depends on the algorithm being used
-   * (see the documentation of each implementation to find out more).
-   */
-  void init(CipherParameters params);
-
-  /// Process a whole block of [data] at once, returning the result in a new byte array.
-  Uint8List process(Uint8List data);
 
   /// Derive key from given input and put it in [out] at offset [outOff].
   int deriveKey(Uint8List inp, int inpOff, Uint8List out, int outOff);

@@ -9,6 +9,7 @@ library cipher.digests.md4_family_digest;
 
 import "dart:typed_data";
 
+import "package:cipher/api.dart";
 import "package:cipher/src/ufixnum.dart";
 import "package:cipher/digests/base_digest.dart";
 
@@ -28,10 +29,12 @@ abstract class MD4FamilyDigest extends BaseDigest {
   final buffer;
   int bufferOffset;
 
-  MD4FamilyDigest(this._endian, int stateSize, int bufferSize, [int packedStateSize=null]) :
-    _packedStateSize = (packedStateSize == null) ? stateSize : packedStateSize,
-    state = new List<int>(stateSize),
-    buffer = new List<int>(bufferSize) {
+  MD4FamilyDigest(String algorithmName, Map<Param, dynamic> params, this._endian, int stateSize,
+      int bufferSize, [int packedStateSize = null])
+      : super(algorithmName, params),
+        _packedStateSize = (packedStateSize == null) ? stateSize : packedStateSize,
+        state = new List<int>(stateSize),
+        buffer = new List<int>(bufferSize) {
     reset();
   }
 
@@ -107,7 +110,7 @@ abstract class MD4FamilyDigest extends BaseDigest {
 
   /// Process [len] bytes from [inp] starting at [inpOff]
   void _processBytes(Uint8List inp, int inpOff, int len) {
-    while( len > 0 ) {
+    while (len > 0) {
       updateByte(inp[inpOff]);
 
       inpOff++;
@@ -115,11 +118,14 @@ abstract class MD4FamilyDigest extends BaseDigest {
     }
   }
 
-  /// Process data word by word until no more words can be extracted from [inp] and return the number of bytes processed.
+
+
+
+      /// Process data word by word until no more words can be extracted from [inp] and return the number of bytes processed.
   int _processWholeWords(Uint8List inp, int inpOff, int len) {
     int processed = 0;
     while (len > _wordBuffer.length) {
-      _processWord( inp, inpOff );
+      _processWord(inp, inpOff);
 
       inpOff += _wordBuffer.length;
       len -= _wordBuffer.length;
@@ -129,11 +135,14 @@ abstract class MD4FamilyDigest extends BaseDigest {
     return processed;
   }
 
-  /// Process bytes from [inp] until the word buffer [_wordBuffer] is full and reset and return the number of bytes processed.
+
+
+
+      /// Process bytes from [inp] until the word buffer [_wordBuffer] is full and reset and return the number of bytes processed.
   int _processUntilNextWord(Uint8List inp, int inpOff, int len) {
     var processed = 0;
 
-    while( (_wordBufferOffset != 0) && (len > 0) ) {
+    while ((_wordBufferOffset != 0) && (len > 0)) {
       updateByte(inp[inpOff]);
 
       inpOff++;
@@ -173,7 +182,7 @@ abstract class MD4FamilyDigest extends BaseDigest {
         break;
 
       case Endianness.BIG_ENDIAN:
-        buffer[14]   = bitLength.hi32;
+        buffer[14] = bitLength.hi32;
         buffer[15] = bitLength.lo32;
         break;
 

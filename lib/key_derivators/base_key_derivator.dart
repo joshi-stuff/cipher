@@ -10,9 +10,12 @@ library cipher.key_derivators.base_key_derivator;
 import "dart:typed_data";
 
 import "package:cipher/api.dart";
+import "package:cipher/algorithm/base_algorithm.dart";
 
 /// Base implementation of [KeyDerivator] which provides shared methods.
-abstract class BaseKeyDerivator implements KeyDerivator {
+abstract class BaseKeyDerivator extends BaseParameterizedNamedAlgorithm implements KeyDerivator {
+
+  BaseKeyDerivator(String algorithmName, Map<Param, dynamic> params) : super(algorithmName, params);
 
   Uint8List process(Uint8List data) {
     var out = new Uint8List(keySize);

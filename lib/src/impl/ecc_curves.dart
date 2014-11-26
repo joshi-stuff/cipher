@@ -402,7 +402,7 @@ void _registerFpStandardCurve( String name, {BigInteger q, BigInteger a, BigInte
 
   var curve = new fp.ECCurve(q,a,b);
   var seedBytes = (seed == null) ? null : seed.toByteArray();
-  ECDomainParameters.registry[name] = (_)
+  ECDomainParameters.registry[name] = (algorithmName, params)
     => new ECDomainParametersImpl( name, curve, curve.decodePoint( g.toByteArray() ), n, h, seedBytes );
 }
 

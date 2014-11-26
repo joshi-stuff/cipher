@@ -10,37 +10,48 @@ library cipher.paddings.padded_block_cipher;
 import "dart:typed_data";
 
 import "package:cipher/api.dart";
+import "package:cipher/algorithm/base_algorithm.dart";
 
 /// The standard implementation of [PaddedBlockCipher].
-class PaddedBlockCipherImpl implements PaddedBlockCipher {
+class PaddedBlockCipherImpl extends BaseParameterizedNamedAlgorithm implements PaddedBlockCipher {
 
-  final Padding padding;
-  final BlockCipher cipher;
+  final Padding _padding;
+  final BlockCipher _cipher;
 
-  bool _encrypting;
+  final bool _forEncryption;
 
-  PaddedBlockCipherImpl(this.padding, this.cipher);
+  // TODO: revisar la composicion de parametros para que sea coherente con la creacion
+  // TODO: quitar parametros en constructores de clases que no necesiten parametros
+  PaddedBlockCipherImpl(Padding padding, BlockCipher cipher)
+      : super("${cipher.algorithmName}/${padding.algorithmName}", {}),
+        _padding = padding,
+        _cipher = cipher,
+        _forEncryption = cipher.parameters[Param.ForEncryption] {
 
-  String get algorithmName => cipher.algorithmName + "/" + padding.algorithmName;
+    if (_forEncryption != _padding.parameters[Param.ForPadding]) {
+      throw new ArgumentError(
+          "Cipher and padding parameters ForEncryption and ForPadding must be synchronized");
+    }
 
-  int get blockSize => cipher.blockSize;
-
-  void reset() {
-    _encrypting = null;
-    cipher.reset();
+    if (_padding.parameters[Param.BlockSize] != _cipher.blockSize) {
+      throw new ArgumentError(
+          "Padding parameter BlockSize must have the same value as the cipher's block size");
+    }
   }
 
-  void init(bool forEncryption, PaddedBlockCipherParameters params) {
-    _encrypting = forEncryption;
-    cipher.init(forEncryption, params.underlyingCipherParameters);
-    padding.init(params.paddingCipherParameters);
+  int get blockSize => _cipher.blockSize;
+
+  void reset() {
+    _cipher.reset();
   }
 
   Uint8List process(Uint8List data) {
+    return _cipher.process(_padding.process(data));
+    /*
     var inputBlocks = (data.length + blockSize - 1) ~/ blockSize;
 
     var outputBlocks;
-    if (_encrypting) {
+    if (_forEncryption) {
       outputBlocks = (data.length + blockSize) ~/ blockSize;
     } else {
       if ((data.length % blockSize) != 0) {
@@ -60,21 +71,26 @@ class PaddedBlockCipherImpl implements PaddedBlockCipher {
     var lastBlockSize = doFinal(data, lastBlockOffset, out, lastBlockOffset);
 
     return out.sublist(0, lastBlockOffset + lastBlockSize);
+     */
   }
 
   int processBlock(Uint8List inp, int inpOff, Uint8List out, int outOff) {
-    return cipher.processBlock(inp, inpOff, out, outOff);
+    return _cipher.processBlock(inp, inpOff, out, outOff);
   }
 
   int doFinal(Uint8List inp, int inpOff, Uint8List out, int outOff) {
-    if (_encrypting) {
+    var output = _cipher.process(_padding.process(inp.sublist(inpOff)));
+    out.setAll(outOff, output);
+    return output.length;
+    /*
+    if (_forEncryption) {
       var lastInputBlock = new Uint8List(blockSize)..setAll(0, inp.sublist(inpOff));
 
       var remainder = inp.length - inpOff;
 
       if (remainder < blockSize) {
         // Padding goes embedded in last block of data
-        padding.addPadding(lastInputBlock, (inp.length - inpOff));
+        _padding.addPadding(lastInputBlock, (inp.length - inpOff));
 
         processBlock(lastInputBlock, 0, out, outOff);
 
@@ -83,7 +99,7 @@ class PaddedBlockCipherImpl implements PaddedBlockCipher {
         // Padding goes alone in an additional block
         processBlock(inp, inpOff, out, outOff);
 
-        padding.addPadding(lastInputBlock, 0);
+        _padding.addPadding(lastInputBlock, 0);
 
         processBlock(lastInputBlock, 0, out, outOff + blockSize);
 
@@ -101,6 +117,7 @@ class PaddedBlockCipherImpl implements PaddedBlockCipher {
 
       return padOffsetInBlock;
     }
+     */
   }
 
 }

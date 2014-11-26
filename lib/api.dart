@@ -16,10 +16,11 @@ library cipher.api;
 import "dart:typed_data";
 
 import "package:bignum/bignum.dart";
-
 import "package:cipher/registry/registry.dart";
+
 export "package:cipher/registry/registry.dart";
 
+part "./src/api/algorithm.dart";
 part "./src/api/asymmetric.dart";
 part "./src/api/parameters.dart";
 part "./src/api/random.dart";

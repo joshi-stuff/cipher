@@ -16,32 +16,27 @@ import "package:cipher/paddings/base_padding.dart";
 /// A [Padding] that adds PKCS7/PKCS5 padding to a block.
 class PKCS7Padding extends BasePadding {
 
-  String get algorithmName => "PKCS7";
+  PKCS7Padding(Map<Param, dynamic> params)
+      : super("PKCS7", params);
 
-  void init( [CipherParameters params] ) {
-      // nothing to do.
-  }
+  void addPadding(Uint8List data, int padOffset) {
+    var code = (data.length - padOffset);
 
-  int addPadding( Uint8List data, int offset ) {
-    var code = (data.length - offset);
-
-    while( offset<data.length ) {
-      data[offset] = code;
-      offset++;
+    while (padOffset < data.length) {
+      data[padOffset] = code;
+      padOffset++;
     }
-
-    return code;
   }
 
-  int padCount( Uint8List data ) {
+  int countPadding(Uint8List data) {
     var count = clip8(data[data.length - 1]);
 
-    if( count > data.length || count == 0 ) {
+    if (count > data.length || count == 0) {
       throw new ArgumentError("Invalid or corrupted pad block");
     }
 
-    for( var i=1 ; i<=count ; i++ ) {
-      if( data[data.length - i] != count ) {
+    for (var i = 1; i <= count; i++) {
+      if (data[data.length - i] != count) {
         throw new ArgumentError("Invalid or corrupted pad block");
       }
     }
@@ -50,4 +45,3 @@ class PKCS7Padding extends BasePadding {
   }
 
 }
-

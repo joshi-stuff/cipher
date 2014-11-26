@@ -10,9 +10,14 @@ library cipher.asymmetric.base_asymmetric_block_cipher;
 import "dart:typed_data";
 
 import "package:cipher/api.dart";
+import "package:cipher/algorithm/base_algorithm.dart";
 
 /// Base implementation of [AsymmetricBlockCipher] which provides shared methods.
-abstract class BaseAsymmetricBlockCipher implements AsymmetricBlockCipher {
+abstract class BaseAsymmetricBlockCipher extends BaseParameterizedNamedAlgorithm implements
+    AsymmetricBlockCipher {
+
+  BaseAsymmetricBlockCipher(String algorithmName, Map<Param, dynamic> params)
+      : super(algorithmName, params);
 
   Uint8List process(Uint8List data) {
     var out = new Uint8List(outputBlockSize);

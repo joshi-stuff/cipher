@@ -16,36 +16,29 @@ class PKCS1Encoding extends BaseAsymmetricBlockCipher {
 
   static const _HEADER_LENGTH = 10;
 
+  final SecureRandom _random;
   final AsymmetricBlockCipher _engine;
 
-  SecureRandom _random;
-  bool _forEncryption;
-  bool _forPrivateKey;
+  final bool _forEncryption;
+  final PrivateKey _privateKey;
+  final PublicKey _publicKey;
 
-  PKCS1Encoding(this._engine);
+  PKCS1Encoding(SecureRandom random, AsymmetricBlockCipher engine, Map<Param, dynamic> params)
+      : super(_composeAlgorithmName(random, engine), params),
+        _random = random,
+        _engine = engine,
+        _forEncryption = params[Param.ForEncryption],
+        _publicKey = params[Param.PublicKey],
+        _privateKey = params[Param.PrivateKey] {
 
-  String get algorithmName => "${_engine.algorithmName}/PKCS1";
-
-  void reset() {
-  }
-
-  void init(bool forEncryption, CipherParameters params) {
-    AsymmetricKeyParameter akparams;
-
-    if (params is ParametersWithRandom) {
-      ParametersWithRandom paramswr = params;
-
-      _random = paramswr.random;
-      akparams = paramswr.parameters;
-    } else {
-      _random = new SecureRandom();
-      akparams = params;
+    if ((_publicKey != null) && (_privateKey != null)) {
+      throw new ArgumentError("Only one key (public or private) must be provided as parameter");
     }
 
-    _engine.init(forEncryption, akparams);
+    reset();
+  }
 
-    _forPrivateKey = (akparams.key is PrivateKey);
-    _forEncryption = forEncryption;
+  void reset() {
   }
 
   int get inputBlockSize {
@@ -76,6 +69,18 @@ class PKCS1Encoding extends BaseAsymmetricBlockCipher {
     }
   }
 
+  bool get _forPrivateKey => (_privateKey != null);
+
+  static String _composeAlgorithmName(SecureRandom random, AsymmetricBlockCipher engine) {
+    var algorithmName = "${engine.algorithmName}/PKCS1";
+
+    if (random.algorithmName != "") {
+      algorithmName = "${random.algorithmName}/" + algorithmName;
+    }
+
+    return algorithmName;
+  }
+
   int _encodeBlock(Uint8List inp, int inpOff, int inpLen, Uint8List out, int outOff) {
     if (inpLen > inputBlockSize) {
       throw new ArgumentError("Input data too large");
@@ -85,11 +90,11 @@ class PKCS1Encoding extends BaseAsymmetricBlockCipher {
     var padLength = (block.length - inpLen - 1);
 
     if (_forPrivateKey) {
-      block[0] = 0x01;                        // type code 1
+      block[0] = 0x01; // type code 1
       block.fillRange(1, padLength, 0xFF);
     } else {
-      block[0] = 0x02;                        // type code 2
-      block.setRange(1, padLength, _random.nextBytes(padLength-1));
+      block[0] = 0x02; // type code 2
+      block.setRange(1, padLength, _random.nextBytes(padLength - 1));
 
       // a zero byte marks the end of the padding, so all
       // the pad bytes must be non-zero.
@@ -101,7 +106,7 @@ class PKCS1Encoding extends BaseAsymmetricBlockCipher {
     }
 
     block[padLength] = 0x00; // mark the end of the padding
-    block.setRange(padLength+1, block.length, inp.sublist(inpOff));
+    block.setRange(padLength + 1, block.length, inp.sublist(inpOff));
 
     return _engine.processBlock(block, 0, block.length, out, outOff);
   }
@@ -141,7 +146,7 @@ class PKCS1Encoding extends BaseAsymmetricBlockCipher {
       }
     }
 
-    start++;           // data should start at the next byte
+    start++; // data should start at the next byte
 
     if ((start > block.length) || (start < _HEADER_LENGTH)) {
       throw new ArgumentError("No data found in block, only padding");

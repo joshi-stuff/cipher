@@ -29,7 +29,7 @@ abstract class ECDomainParameters {
   BigInteger get n;
 
   /// Create a curve description from its standard name
-  factory ECDomainParameters( String domainName ) => registry.create(domainName);
+  factory ECDomainParameters(String domainName) => registry.create(domainName);
 
 }
 
@@ -42,10 +42,10 @@ abstract class ECFieldElement {
 
   int get byteLength;
 
-  ECFieldElement operator +( ECFieldElement b );
-  ECFieldElement operator -( ECFieldElement b );
-  ECFieldElement operator *( ECFieldElement b );
-  ECFieldElement operator /( ECFieldElement b );
+  ECFieldElement operator +(ECFieldElement b);
+  ECFieldElement operator -(ECFieldElement b);
+  ECFieldElement operator *(ECFieldElement b);
+  ECFieldElement operator /(ECFieldElement b);
 
   ECFieldElement operator -();
 
@@ -90,18 +90,18 @@ abstract class ECCurve {
   ECPoint get infinity;
 
   /// Create an [ECFieldElement] on this curve from its big integer value.
-  ECFieldElement fromBigInteger( BigInteger x );
+  ECFieldElement fromBigInteger(BigInteger x);
 
   /// Create an [ECPoint] on its curve from its coordinates
-  ECPoint createPoint( BigInteger x, BigInteger y, [bool withCompression=false] );
+  ECPoint createPoint(BigInteger x, BigInteger y, [bool withCompression = false]);
 
-  ECPoint decompressPoint( int yTilde, BigInteger X1 );
+  ECPoint decompressPoint(int yTilde, BigInteger X1);
 
   /**
    * Decode a point on this curve from its ASN.1 encoding. The different encodings are taken account of, including point
    * compression for Fp (X9.62 s 4.2.1 pg 17).
    */
-  ECPoint decodePoint( List<int> encoded );
+  ECPoint decodePoint(List<int> encoded);
 
 }
 
@@ -125,14 +125,14 @@ class ECPrivateKey extends ECAsymmetricKey implements PrivateKey {
   /// Create an ECC private key for the given d and domain parameters.
   ECPrivateKey(this.d, ECDomainParameters parameters) : super(parameters);
 
-  bool operator ==( other ) {
-    if( other==null ) return false;
-    if( other is! ECPrivateKey ) return false;
-    return (other.parameters==this.parameters) && (other.d==this.d);
+  bool operator ==(other) {
+    if (other == null) return false;
+    if (other is! ECPrivateKey) return false;
+    return (other.parameters == this.parameters) && (other.d == this.d);
   }
 
   int get hashCode {
-    return parameters.hashCode+d.hashCode;
+    return parameters.hashCode + d.hashCode;
   }
 
 }
@@ -144,16 +144,16 @@ class ECPublicKey extends ECAsymmetricKey implements PublicKey {
   final ECPoint Q;
 
   /// Create an ECC public key for the given Q and domain parameters.
-  ECPublicKey( this.Q, ECDomainParameters parameters ) : super(parameters);
+  ECPublicKey(this.Q, ECDomainParameters parameters) : super(parameters);
 
-  bool operator ==( other ) {
-    if( other==null ) return false;
-    if( other is! ECPublicKey ) return false;
-    return (other.parameters==this.parameters) && (other.Q==this.Q);
+  bool operator ==(other) {
+    if (other == null) return false;
+    if (other is! ECPublicKey) return false;
+    return (other.parameters == this.parameters) && (other.Q == this.Q);
   }
 
   int get hashCode {
-    return parameters.hashCode+Q.hashCode;
+    return parameters.hashCode + Q.hashCode;
   }
 
 }
@@ -164,19 +164,18 @@ class ECSignature implements Signature {
   final BigInteger r;
   final BigInteger s;
 
-  ECSignature( this.r, this.s );
+  ECSignature(this.r, this.s);
 
   String toString() => "(${r.toString()},${s.toString()})";
 
   bool operator ==(other) {
-    if( other==null ) return false;
-    if( other is! ECSignature ) return false;
-    return (other.r==this.r) && (other.s==this.s);
+    if (other == null) return false;
+    if (other is! ECSignature) return false;
+    return (other.r == this.r) && (other.s == this.s);
   }
 
   int get hashCode {
-    return r.hashCode+s.hashCode;
+    return r.hashCode + s.hashCode;
   }
 
 }
-

@@ -15,15 +15,14 @@ void main() {
 
   initCipher();
 
-  runDigestTests( new Digest("SHA-512/488"), [
-
-    "Lorem ipsum dolor sit amet, consectetur adipiscing elit...",
-    "77c5a401110133e531d1acf33ea6010d8d8149f9804310b6d32a69033aee079e88603166478069b1d4622030a508930a062199150f66462e26063266e5",
-
-    "En un lugar de La Mancha, de cuyo nombre no quiero acordarme...",
-    "149a6a1e7f9741b56186b01c9195e1c5a003197ff559604653ea176c6d6e75c7cd117d3105cf10bc8d1f24e46c98c5a8b2fa2e53c16e95ada867b20ea1",
-
-  ]);
+  runDigestTests(
+      new Digest("SHA-512-488"),
+      [
+          "Lorem ipsum dolor sit amet, consectetur adipiscing elit...",
+          "77c5a401110133e531d1acf33ea6010d8d8149f9804310b6d32a69033aee079e88603166478069b1d4622030"
+              "a508930a062199150f66462e26063266e5",
+          "En un lugar de La Mancha, de cuyo nombre no quiero acordarme...",
+          "149a6a1e7f9741b56186b01c9195e1c5a003197ff559604653ea176c6d6e75c7cd117d3105cf10bc8d1f24e4"
+              "6c98c5a8b2fa2e53c16e95ada867b20ea1",]);
 
 }
-

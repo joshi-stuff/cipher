@@ -18,10 +18,8 @@ class SHA1Digest extends MD4FamilyDigest implements Digest {
 
   static const _DIGEST_LENGTH = 20;
 
-  SHA1Digest() :
-    super(Endianness.BIG_ENDIAN, 5, 80);
+  SHA1Digest(Map<Param, dynamic> params) : super("SHA-1", params, Endianness.BIG_ENDIAN, 5, 80);
 
-  final algorithmName = "SHA-1";
   final digestSize = _DIGEST_LENGTH;
 
   void resetState() {
@@ -140,6 +138,5 @@ class SHA1Digest extends MD4FamilyDigest implements Digest {
   int _g(int u, int v, int w) => ((u & v) | (u & w) | (v & w));
 
 }
-
 
 

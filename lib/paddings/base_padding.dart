@@ -10,19 +10,36 @@ library cipher.paddings.base_padding;
 import "dart:typed_data";
 
 import "package:cipher/api.dart";
+import "package:cipher/algorithm/base_algorithm.dart";
 
 /// Base implementation of [Padding] which provides shared methods.
-abstract class BasePadding implements Padding {
+abstract class BasePadding extends BaseParameterizedNamedAlgorithm implements Padding {
 
-  Uint8List process(bool pad, Uint8List data) {
-    if (pad) {
-      var out = new Uint8List.fromList(data);
-      var len = addPadding(out, 0);
+  final bool forPadding;
+  final int blockSize;
+
+  BasePadding(String algorithmName, Map<Param, dynamic> params)
+      : super(algorithmName, params),
+        forPadding = params[Param.ForPadding],
+        blockSize = params[Param.BlockSize];
+
+  Uint8List process(Uint8List data) {
+    if (forPadding) {
+      final padSize = blockSize - (data.length % blockSize);
+      final out = new Uint8List(data.length + padSize);
+      out.setAll(0, data);
+      addPadding(out, out.length - padSize);
       return out;
     } else {
-      var len = padCount(data);
-      return new Uint8List.fromList(data.sublist(0, len));
+      final padSize = countPadding(data);
+      final out = new Uint8List(data.length - padSize);
+      out.setRange(0, data.length - padSize, data);
+      return out;
     }
   }
+
+  void addPadding(Uint8List data, int padOffset);
+
+  int countPadding(Uint8List data);
 
 }

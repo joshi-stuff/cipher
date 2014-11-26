@@ -7,6 +7,55 @@
 
 part of cipher.api;
 
+class Param<T> {
+
+  static const ForEncryption = const Param<bool>("forEncryption");
+
+  static const ForPadding = const Param<bool>("forPadding");
+  static const BlockSize = const Param<int>("blockSize");
+
+  static const BitStrength = const Param<int>("bitStrength");
+  static const DesiredKeyLength = const Param<int>("desiredKeyLength");
+
+  static const Key = const Param<List<int>>("key");
+  static const PublicKey = const Param<PublicKey>("publicKey");
+  static const PrivateKey = const Param<PrivateKey>("privateKey");
+
+  static const IV = const Param<List<int>>("iv");
+  static const Salt = const Param<List<int>>("salt");
+
+  static const Chain = const Param<List<Map<Param, dynamic>>>("chain");
+
+  static Map<Param, dynamic> merge(List<Map<Param, dynamic>> unchainedParams) => <Param, dynamic>{
+    Param.Chain: unchainedParams
+  };
+
+  static List<Map<Param, dynamic>> split(Map<Param, dynamic> params, int count) {
+    params = new Map<Param, dynamic>.from(params);
+
+    List<Map<Param, dynamic>> chainParams = params.remove(Param.Chain);
+    if (chainParams == null) {
+      chainParams = new List.filled(count, {});
+    }
+
+    List<Map<Param, dynamic>> unchainedParams = new List(count);
+    for (int i = 0; i < count; i++) {
+      unchainedParams[i] = {}
+          ..addAll(params)
+          ..addAll(chainParams[i]);
+    }
+
+    return unchainedParams;
+  }
+
+  final String name;
+
+  const Param(this.name);
+
+  String toString() => name;
+
+}
+
 /// Abstract [CipherParameters] to hold an asymmetric (public or private) key
 abstract class AsymmetricKeyParameter<T extends AsymmetricKey> implements CipherParameters {
 

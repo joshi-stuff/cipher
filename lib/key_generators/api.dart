@@ -12,6 +12,23 @@ import "package:bignum/bignum.dart";
 import "package:cipher/api.dart";
 import "package:cipher/ecc/api.dart";
 
+class ECKeyGeneratorParam<T> extends Param<T> {
+
+  static const DomainParameters = const ECKeyGeneratorParam<ECDomainParameters>("domainParameters");
+
+  const ECKeyGeneratorParam(String name) : super(name);
+
+}
+
+class RSAKeyGeneratorParam<T> extends Param<T> {
+
+  static const PublicExponent = const RSAKeyGeneratorParam<BigInteger>("publicExponent");
+  static const Certainty = const RSAKeyGeneratorParam<int>("certainty");
+
+  const RSAKeyGeneratorParam(String name) : super(name);
+
+}
+
 /// Abstract [CipherParameters] to init an ECC key generator.
 class ECKeyGeneratorParameters extends KeyGeneratorParameters {
 

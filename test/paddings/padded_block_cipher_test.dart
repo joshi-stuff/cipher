@@ -16,28 +16,42 @@ import "../test/src/helpers.dart";
 
 void main() {
   initCipher();
-  BlockCipher.registry["Null"] = (_) => new NullBlockCipher();
+  BlockCipher.registry["Null"] = (name, params) => new NullBlockCipher(Param.split(params, 1)[0]);
 
-  var params = new PaddedBlockCipherParameters(null, null);
-  var pbc = new PaddedBlockCipher("Null/PKCS7");
+  var cipher = new PaddedBlockCipher("Null/PKCS7", {
+    Param.Chain: [{
+        Param.ForEncryption: true,
+      }, {
+        Param.ForPadding: true,
+        Param.BlockSize: 16
+      }]
+  });
+  var decipher = new PaddedBlockCipher("Null/PKCS7", {
+    Param.Chain: [{
+        Param.ForEncryption: false,
+      }, {
+        Param.ForPadding: false,
+      }]
+  });
 
   group("PaddedBlockCipher:", () {
+
     group("partial blocks:", () {
       var sequence = createUint8ListFromSequentialNumbers(24);
       var paddedSequenceHex = "000102030405060708090a0b0c0d0e0f10111213141516170808080808080808";
 
       test("cipher", () {
-        pbc.init(true, params);
+        cipher.reset();
 
-        var out = pbc.process(sequence);
+        var out = cipher.process(sequence);
 
         expect(formatBytesAsHexString(out), paddedSequenceHex);
       });
 
       test("decipher", () {
-        pbc.init(false, params);
+        decipher.reset();
 
-        var out = pbc.process(createUint8ListFromHexString(paddedSequenceHex));
+        var out = decipher.process(createUint8ListFromHexString(paddedSequenceHex));
 
         expect(formatBytesAsHexString(out), formatBytesAsHexString(sequence));
       });
@@ -48,17 +62,17 @@ void main() {
       var paddedSequenceHex = "000102030405060708090a0b0c0d0e0f10101010101010101010101010101010";
 
       test("cipher", () {
-        pbc.init(true, params);
+        cipher.reset();
 
-        var out = pbc.process(sequence);
+        var out = cipher.process(sequence);
 
         expect(formatBytesAsHexString(out), paddedSequenceHex);
       });
 
       test("decipher", () {
-        pbc.init(false, params);
+        decipher.reset();
 
-        var out = pbc.process(createUint8ListFromHexString(paddedSequenceHex));
+        var out = decipher.process(createUint8ListFromHexString(paddedSequenceHex));
 
         expect(formatBytesAsHexString(out), formatBytesAsHexString(sequence));
       });

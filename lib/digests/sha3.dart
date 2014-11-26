@@ -9,29 +9,66 @@ library cipher.digests.sha3;
 
 import "dart:typed_data";
 
+import "package:cipher/api.dart";
 import "package:cipher/src/ufixnum.dart";
 import "package:cipher/digests/base_digest.dart";
 
 /// Implementation of SHA-3 digest.
 class SHA3Digest extends BaseDigest {
 
-  static final _keccakRoundConstants = new Register64List.from([
-    [0x00000000, 0x00000001], [0x00000000, 0x00008082], [0x80000000, 0x0000808a],
-    [0x80000000, 0x80008000], [0x00000000, 0x0000808b], [0x00000000, 0x80000001],
-    [0x80000000, 0x80008081], [0x80000000, 0x00008009], [0x00000000, 0x0000008a],
-    [0x00000000, 0x00000088], [0x00000000, 0x80008009], [0x00000000, 0x8000000a],
-    [0x00000000, 0x8000808b], [0x80000000, 0x0000008b], [0x80000000, 0x00008089],
-    [0x80000000, 0x00008003], [0x80000000, 0x00008002], [0x80000000, 0x00000080],
-    [0x00000000, 0x0000800a], [0x80000000, 0x8000000a], [0x80000000, 0x80008081],
-    [0x80000000, 0x00008080], [0x00000000, 0x80000001], [0x80000000, 0x80008008]
-  ]);
+  static final _keccakRoundConstants = new Register64List.from(
+      [
+          [0x00000000, 0x00000001],
+          [0x00000000, 0x00008082],
+          [0x80000000, 0x0000808a],
+          [0x80000000, 0x80008000],
+          [0x00000000, 0x0000808b],
+          [0x00000000, 0x80000001],
+          [0x80000000, 0x80008081],
+          [0x80000000, 0x00008009],
+          [0x00000000, 0x0000008a],
+          [0x00000000, 0x00000088],
+          [0x00000000, 0x80008009],
+          [0x00000000, 0x8000000a],
+          [0x00000000, 0x8000808b],
+          [0x80000000, 0x0000008b],
+          [0x80000000, 0x00008089],
+          [0x80000000, 0x00008003],
+          [0x80000000, 0x00008002],
+          [0x80000000, 0x00000080],
+          [0x00000000, 0x0000800a],
+          [0x80000000, 0x8000000a],
+          [0x80000000, 0x80008081],
+          [0x80000000, 0x00008080],
+          [0x00000000, 0x80000001],
+          [0x80000000, 0x80008008]]);
 
   static final _keccakRhoOffsets = [
-    0x00000000, 0x00000001, 0x0000003e, 0x0000001c, 0x0000001b, 0x00000024, 0x0000002c,
-    0x00000006, 0x00000037, 0x00000014, 0x00000003, 0x0000000a, 0x0000002b, 0x00000019,
-    0x00000027, 0x00000029, 0x0000002d, 0x0000000f, 0x00000015, 0x00000008, 0x00000012,
-    0x00000002, 0x0000003d, 0x00000038, 0x0000000e
-  ];
+      0x00000000,
+      0x00000001,
+      0x0000003e,
+      0x0000001c,
+      0x0000001b,
+      0x00000024,
+      0x0000002c,
+      0x00000006,
+      0x00000037,
+      0x00000014,
+      0x00000003,
+      0x0000000a,
+      0x0000002b,
+      0x00000019,
+      0x00000027,
+      0x00000029,
+      0x0000002d,
+      0x0000000f,
+      0x00000015,
+      0x00000008,
+      0x00000012,
+      0x00000002,
+      0x0000003d,
+      0x00000038,
+      0x0000000e];
 
   int _rate;
   int _fixedOutputLength;
@@ -43,11 +80,10 @@ class SHA3Digest extends BaseDigest {
   bool _squeezing;
   int _bitsAvailableForSqueezing;
 
-  SHA3Digest([int bitLength = 0]) {
+  SHA3Digest(Map<Param, dynamic> params, [int bitLength = 0])
+      : super("SHA-3/${2*bitLength}", params) {
     _init(bitLength);
   }
-
-  String get algorithmName => "SHA-3/${_fixedOutputLength}";
 
   int get digestSize => (_fixedOutputLength ~/ 8);
 
@@ -73,16 +109,16 @@ class SHA3Digest extends BaseDigest {
 
   void _init(int bitLength) {
     switch (bitLength) {
-      case 288:
-        _initSponge(1024, 576);
-        break;
-
       case 224:
         _initSponge(1152, 448);
         break;
 
       case 256:
         _initSponge(1088, 512);
+        break;
+
+      case 288:
+        _initSponge(1024, 576);
         break;
 
       case 384:
@@ -94,7 +130,8 @@ class SHA3Digest extends BaseDigest {
         break;
 
       default:
-        throw new ArgumentError("bitLength (${bitLength}) must be one of 224, 256, 384, or 512");
+        throw new ArgumentError(
+            "bitLength (${bitLength}) must be one of 224, 256, 288, 384, or 512");
     }
   }
 
@@ -406,7 +443,5 @@ class SHA3Digest extends BaseDigest {
   }
 
 }
-
-
 
 

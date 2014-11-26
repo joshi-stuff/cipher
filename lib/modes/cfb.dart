@@ -15,65 +15,35 @@ import "package:cipher/block/base_block_cipher.dart";
 /// Implementation of Cipher Feedback Mode (CFB) on top of a [BlockCipher].
 class CFBBlockCipher extends BaseBlockCipher {
 
-  final int blockSize;
+  final int _blockSize;
+  final BlockCipher _cipher;
 
-  final BlockCipher _underlyingCipher;
+  final bool _forEncryption;
+  final List<int> _iv;
 
-  Uint8List _IV;
   Uint8List _cfbV;
   Uint8List _cfbOutV;
-  bool _encrypting;
 
-  CFBBlockCipher(this._underlyingCipher,this.blockSize) {
-    _IV = new Uint8List(_underlyingCipher.blockSize);
-    _cfbV = new Uint8List(_underlyingCipher.blockSize);
-    _cfbOutV = new Uint8List(_underlyingCipher.blockSize);
+  CFBBlockCipher(Map<Param, dynamic> params, BlockCipher cipher, int blockSize)
+      : super("${cipher.algorithmName}/CFB-${blockSize*8}", params),
+        _blockSize = blockSize,
+        _cipher = cipher,
+        _forEncryption = params[Param.ForEncryption],
+        _iv = _normalizeIV(params[Param.IV], cipher.blockSize) {
+
+    _cfbV = new Uint8List(_cipher.blockSize);
+    _cfbOutV = new Uint8List(_cipher.blockSize);
+
+    reset();
   }
 
-  String get algorithmName => "${_underlyingCipher.algorithmName}/CFB-${blockSize*8}";
+  int get blockSize => _blockSize;
 
   void reset() {
-    _cfbV.setRange(0, _IV.length, _IV);
-    _underlyingCipher.reset();
-  }
+    _cipher.reset();
 
-  /**
-   * Initialise the cipher and, possibly, the initialisation vector (IV).
-   * If an IV isn't passed as part of the parameter, the IV will be all zeros.
-   * An IV which is too short is handled in FIPS compliant fashion.
-  *
-   * @param encrypting if true the cipher is initialised for
-   *  encryption, if false for decryption.
-   * @param params the key and other data required by the cipher.
-   * @exception IllegalArgumentException if the params argument is
-   * inappropriate.
-   */
-  void init( bool encrypting, CipherParameters params ) {
-    _encrypting = encrypting;
-
-    if( params is ParametersWithIV ) {
-      ParametersWithIV ivParam = params;
-      var iv = ivParam.iv;
-
-      if( iv.length<_IV.length ) {
-        // prepend the supplied IV with zeros (per FIPS PUB 81)
-        var offset = _IV.length - iv.length;
-        _IV.fillRange( 0, offset, 0 );
-        _IV.setRange(offset, _IV.length, iv );
-      } else {
-        _IV.setRange(0, _IV.length, iv );
-      }
-
-      reset();
-
-      // if null it's an IV changed only.
-      if( ivParam.parameters != null ) {
-        _underlyingCipher.init(true, ivParam.parameters);
-      }
-    } else {
-      reset();
-      _underlyingCipher.init(true, params);
-    }
+    _cfbV.setRange(0, _iv.length, _iv);
+    _cfbOutV.fillRange(0, _cfbOutV.length, 0);
   }
 
   /**
@@ -89,14 +59,31 @@ class CFBBlockCipher extends BaseBlockCipher {
    * @exception IllegalStateException if the cipher isn't initialised.
    * @return the number of bytes processed and produced.
    */
-  int processBlock( Uint8List inp, int inpOff, Uint8List out, int outOff )
-    => _encrypting
-        ? _encryptBlock(inp, inpOff, out, outOff)
-        : _decryptBlock(inp, inpOff, out, outOff);
+  int processBlock(Uint8List inp, int inpOff, Uint8List out, int outOff) =>
+      _forEncryption ? _encryptBlock(inp, inpOff, out, outOff) : _decryptBlock(inp, inpOff, out, outOff);
+
+  static List<int> _normalizeIV(List<int> iv, int cipherBlockSize) {
+    if (iv == null) {
+      iv = [];
+    }
+
+    var normalizedIV = new List<int>(cipherBlockSize);
+
+    if (iv.length < cipherBlockSize) {
+      // prepend the supplied IV with zeros (per FIPS PUB 81)
+      var offset = cipherBlockSize - iv.length;
+      normalizedIV.fillRange(0, offset, 0);
+      normalizedIV.setRange(offset, cipherBlockSize, iv);
+    } else {
+      normalizedIV.setRange(0, cipherBlockSize, iv);
+    }
+
+    return normalizedIV;
+  }
 
   /**
    * Do the appropriate processing for CFB mode encryption.
-  *
+   *
    * @param in the array containing the data to be encrypted.
    * @param inOff offset into the in array the data starts at.
    * @param out the array the encrypted data will be copied into.
@@ -106,7 +93,7 @@ class CFBBlockCipher extends BaseBlockCipher {
    * @exception IllegalStateException if the cipher isn't initialised.
    * @return the number of bytes processed and produced.
    */
-  int _encryptBlock( Uint8List inp, int inpOff, Uint8List out, int outOff ) {
+  int _encryptBlock(Uint8List inp, int inpOff, Uint8List out, int outOff) {
     if ((inpOff + blockSize) > inp.length) {
       throw new ArgumentError("Input buffer too short");
     }
@@ -115,17 +102,17 @@ class CFBBlockCipher extends BaseBlockCipher {
       throw new ArgumentError("Output buffer too short");
     }
 
-    _underlyingCipher.processBlock(_cfbV, 0, _cfbOutV, 0);
+    _cipher.processBlock(_cfbV, 0, _cfbOutV, 0);
 
     // XOR the cfbV with the plaintext producing the ciphertext
-    for( int i=0 ; i<blockSize ; i++ ) {
+    for (int i = 0; i < blockSize; i++) {
       out[outOff + i] = _cfbOutV[i] ^ inp[inpOff + i];
     }
 
     // change over the input block.
     var offset = _cfbV.length - blockSize;
-    _cfbV.setRange(0, offset, _cfbV.sublist(blockSize) );
-    _cfbV.setRange(offset, _cfbV.length, out.sublist(outOff) );
+    _cfbV.setRange(0, offset, _cfbV.sublist(blockSize));
+    _cfbV.setRange(offset, _cfbV.length, out.sublist(outOff));
 
     return blockSize;
   }
@@ -142,24 +129,24 @@ class CFBBlockCipher extends BaseBlockCipher {
    * @exception IllegalStateException if the cipher isn't initialised.
    * @return the number of bytes processed and produced.
    */
-  int _decryptBlock( Uint8List inp, int inpOff, Uint8List out, int outOff ) {
-    if( (inpOff + blockSize) > inp.length ) {
+  int _decryptBlock(Uint8List inp, int inpOff, Uint8List out, int outOff) {
+    if ((inpOff + blockSize) > inp.length) {
       throw new ArgumentError("Input buffer too short");
     }
 
-    if( (outOff + blockSize) > out.length ) {
+    if ((outOff + blockSize) > out.length) {
       throw new ArgumentError("Output buffer too short");
     }
 
-    _underlyingCipher.processBlock(_cfbV, 0, _cfbOutV, 0);
+    _cipher.processBlock(_cfbV, 0, _cfbOutV, 0);
 
     // change over the input block.
     var offset = _cfbV.length - blockSize;
-    _cfbV.setRange(0, offset, _cfbV.sublist(blockSize) );
-    _cfbV.setRange(offset, _cfbV.length, inp.sublist(inpOff) );
+    _cfbV.setRange(0, offset, _cfbV.sublist(blockSize));
+    _cfbV.setRange(offset, _cfbV.length, inp.sublist(inpOff));
 
     // XOR the cfbV with the ciphertext producing the plaintext
-    for (int i=0 ; i<blockSize ; i++ ) {
+    for (int i = 0; i < blockSize; i++) {
       out[outOff + i] = _cfbOutV[i] ^ inp[inpOff + i];
     }
 

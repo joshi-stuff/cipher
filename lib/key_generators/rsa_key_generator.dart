@@ -10,31 +10,29 @@ library cipher.key_generators.rsa_key_generator;
 import "package:bignum/bignum.dart";
 
 import "package:cipher/api.dart";
+import "package:cipher/algorithm/base_algorithm.dart";
 import "package:cipher/asymmetric/api.dart";
 import "package:cipher/key_generators/api.dart";
 
-class RSAKeyGenerator implements KeyGenerator {
+class RSAKeyGenerator extends BaseParameterizedNamedAlgorithm implements KeyGenerator {
 
-  SecureRandom _random;
-  RSAKeyGeneratorParameters _params;
+  final SecureRandom _random;
 
-  String get algorithmName => "RSA";
+  final int _bitStrength;
+  final BigInteger _publicExponent;
+  final int _certainty;
 
-  @override
-  void init(CipherParameters params) {
-    if (params is ParametersWithRandom) {
-      _random = params.random;
-      _params = params.parameters;
-    } else {
-      _random = new SecureRandom();
-      _params = params;
+  RSAKeyGenerator(Map<Param, dynamic> params, this._random)
+      : super("RSA", params),
+        _bitStrength = params[Param.BitStrength],
+        _publicExponent = params[RSAKeyGeneratorParam.PublicExponent],
+        _certainty = params[RSAKeyGeneratorParam.Certainty] {
+
+    if (_bitStrength < 12) {
+      throw new ArgumentError("Key bit strength cannot be smaller than 12");
     }
 
-    if (_params.bitStrength < 12) {
-      throw new ArgumentError("key bit strength cannot be smaller than 12");
-    }
-
-    if (!_params.publicExponent.testBit(0)) {
+    if (!_publicExponent.testBit(0)) {
       throw new ArgumentError("Public exponent cannot be even");
     }
   }
@@ -43,12 +41,12 @@ class RSAKeyGenerator implements KeyGenerator {
     var p, q, n, e;
 
     // p and q values should have a length of half the strength in bits
-    var strength = _params.bitStrength;
+    var strength = _bitStrength;
     var pbitlength = (strength + 1) ~/ 2;
     var qbitlength = strength - pbitlength;
     var mindiffbits = strength ~/ 3;
 
-    e = _params.publicExponent;
+    e = _publicExponent;
 
     // TODO Consider generating safe primes for p, q (see DHParametersHelper.generateSafePrimes)
     // (then p-1 and q-1 will not consist of only small factors - see "Pollard's algorithm")
@@ -61,7 +59,7 @@ class RSAKeyGenerator implements KeyGenerator {
         continue;
       }
 
-      if (!p.isProbablePrime(_params.certainty)) {
+      if (!p.isProbablePrime(_certainty)) {
         continue;
       }
 
@@ -85,7 +83,7 @@ class RSAKeyGenerator implements KeyGenerator {
           continue;
         }
 
-        if (!q.isProbablePrime(_params.certainty)) {
+        if (!q.isProbablePrime(_certainty)) {
           continue;
         }
 
@@ -97,7 +95,7 @@ class RSAKeyGenerator implements KeyGenerator {
       // calculate the modulus
       n = p.multiply(q);
 
-      if (n.bitLength() == _params.bitStrength) {
+      if (n.bitLength() == _bitStrength) {
         break;
       }
 

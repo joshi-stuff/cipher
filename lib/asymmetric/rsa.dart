@@ -17,19 +17,33 @@ import "package:cipher/asymmetric/api.dart";
 
 class RSAEngine extends BaseAsymmetricBlockCipher {
 
-  bool _forEncryption;
+  final bool _forEncryption;
+  final RSAPrivateKey _privateKey;
+  final RSAPublicKey _publicKey;
+
   RSAAsymmetricKey _key;
-  BigInteger _dP;
-  BigInteger _dQ;
-  BigInteger _qInv;
 
-  String get algorithmName => "RSA";
+  RSAEngine(Map<Param, dynamic> params)
+      : super("RSA", params),
+        _forEncryption = params[Param.ForEncryption],
+        _publicKey = params[Param.PublicKey],
+        _privateKey = params[Param.PrivateKey] {
 
-  int get inputBlockSize {
-    if (_key==null) {
-      throw new StateError("Input block size cannot be calculated until init() called");
+    if ((_publicKey != null) && (_privateKey != null)) {
+      throw new ArgumentError("Only one key (public or private) must be provided as parameter");
     }
 
+    if (_privateKey != null) {
+      _key = _privateKey;
+    } else {
+      _key = _publicKey;
+    }
+  }
+
+  void reset() {
+  }
+
+  int get inputBlockSize {
     var bitSize = _key.modulus.bitLength();
     if (_forEncryption) {
       return ((bitSize + 7) ~/ 8) - 1;
@@ -39,32 +53,11 @@ class RSAEngine extends BaseAsymmetricBlockCipher {
   }
 
   int get outputBlockSize {
-    if (_key==null) {
-      throw new StateError("Output block size cannot be calculated until init() called");
-    }
-
     var bitSize = _key.modulus.bitLength();
     if (_forEncryption) {
       return (bitSize + 7) ~/ 8;
     } else {
       return ((bitSize + 7) ~/ 8) - 1;
-    }
-  }
-
-  void reset() {
-  }
-
-  void init(bool forEncryption, AsymmetricKeyParameter<RSAAsymmetricKey> params) {
-    _forEncryption = forEncryption;
-    _key = params.key;
-
-    if (_key is RSAPrivateKey) {
-      var privKey = (_key as RSAPrivateKey);
-      var pSub1 = (privKey.p - BigInteger.ONE);
-      var qSub1 = (privKey.q - BigInteger.ONE);
-      _dP = privKey.d.remainder(pSub1);
-      _dQ = privKey.d.remainder(qSub1);
-      _qInv = privKey.q.modInverse(privKey.p);
     }
   }
 
@@ -79,14 +72,14 @@ class RSAEngine extends BaseAsymmetricBlockCipher {
     var inpLen = inp.length;
 
     if (inpLen > (inputBlockSize + 1)) {
-       throw new ArgumentError("Input too large for RSA cipher");
+      throw new ArgumentError("Input too large for RSA cipher");
     }
 
     if ((inpLen == (inputBlockSize + 1)) && !_forEncryption) {
       throw new ArgumentError("Input too large for RSA cipher");
     }
 
-    var res = new BigInteger.fromBytes(1, inp.sublist(inpOff, inpOff+len));
+    var res = new BigInteger.fromBytes(1, inp.sublist(inpOff, inpOff + len));
     if (res >= _key.modulus) {
       throw new ArgumentError("Input too large for RSA cipher");
     }
@@ -98,9 +91,10 @@ class RSAEngine extends BaseAsymmetricBlockCipher {
     final output = result.toByteArray();
 
     if (_forEncryption) {
-      if ((output[0] == 0) && (output.length > outputBlockSize)) { // have ended up with an extra zero byte, copy down.
+      if ((output[0] == 0) &&
+          (output.length > outputBlockSize)) { // have ended up with an extra zero byte, copy down.
         var len = (output.length - 1);
-        out.setRange(outOff, outOff+len, output.sublist(1));
+        out.setRange(outOff, outOff + len, output.sublist(1));
         return len;
       }
       if (output.length < outputBlockSize) { // have ended up with less bytes than normal, lengthen
@@ -108,12 +102,10 @@ class RSAEngine extends BaseAsymmetricBlockCipher {
         out.setRange((outOff + len - output.length), (outOff + len), output);
         return len;
       }
-    }
-    else
-    {
+    } else {
       if (output[0] == 0) { // have ended up with an extra zero byte, copy down.
         var len = (output.length - 1);
-        out.setRange(outOff, outOff+len, output.sublist(1));
+        out.setRange(outOff, outOff + len, output.sublist(1));
         return len;
       }
     }
@@ -123,24 +115,23 @@ class RSAEngine extends BaseAsymmetricBlockCipher {
   }
 
   BigInteger _processBigInteger(BigInteger input) {
-    if (_key is RSAPrivateKey) {
-      var privKey = (_key as RSAPrivateKey);
+    if (_privateKey != null) {
       var mP, mQ, h, m;
 
-      mP = (input.remainder(privKey.p)).modPow(_dP, privKey.p);
+      mP = (input.remainder(_privateKey.p)).modPow(_privateKey.dP, _privateKey.p);
 
-      mQ = (input.remainder(privKey.q)).modPow(_dQ, privKey.q);
+      mQ = (input.remainder(_privateKey.q)).modPow(_privateKey.dQ, _privateKey.q);
 
       h = mP.subtract(mQ);
-      h = h.multiply(_qInv);
-      h = h.mod(privKey.p);
+      h = h.multiply(_privateKey.qInv);
+      h = h.mod(_privateKey.p);
 
-      m = h.multiply(privKey.q);
+      m = h.multiply(_privateKey.q);
       m = m.add(mQ);
 
       return m;
     } else {
-      return input.modPow(_key.exponent, _key.modulus);
+      return input.modPow(_publicKey.exponent, _publicKey.modulus);
     }
   }
 

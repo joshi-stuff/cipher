@@ -20,9 +20,7 @@ class NullDigest extends BaseDigest {
 
   final int digestSize;
 
-  NullDigest([this.digestSize=32]);
-
-  final String algorithmName = "Null";
+  NullDigest(Map<Param, dynamic> params, [this.digestSize = 32]) : super("Null", params);
 
   void reset() {
   }
@@ -39,4 +37,3 @@ class NullDigest extends BaseDigest {
   }
 
 }
-

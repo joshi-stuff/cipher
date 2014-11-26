@@ -12,21 +12,23 @@ import "package:unittest/unittest.dart";
 
 import "./src/helpers.dart";
 
-void runKeyDerivatorTests( KeyDerivator keyDerivator, List<dynamic> paramsPasswordKeyTuples ) {
+void runKeyDerivatorTests(String algorithmName, List<dynamic> paramsPasswordKeyTuples) {
 
-  group( "${keyDerivator.algorithmName}:", () {
+  group("${algorithmName}:", () {
 
-    group( "deriveKey:", () {
+    group("deriveKey:", () {
 
-      for( var i=0 ; i<paramsPasswordKeyTuples.length ; i+=3 ) {
+      for (var i = 0; i < paramsPasswordKeyTuples.length; i += 3) {
 
         var params = paramsPasswordKeyTuples[i];
-        var password = paramsPasswordKeyTuples[i+1];
-        var key = paramsPasswordKeyTuples[i+2];
+        var password = paramsPasswordKeyTuples[i + 1];
+        var key = paramsPasswordKeyTuples[i + 2];
 
-        test( "${formatAsTruncated(password)}", () =>
-          _runKeyDerivatorTest( keyDerivator, params, password, key )
-        );
+        final keyDerivator = new KeyDerivator(algorithmName, params);
+
+        test(
+            "${formatAsTruncated(password)}",
+            () => _runKeyDerivatorTest(keyDerivator, password, key));
 
       }
     });
@@ -35,13 +37,12 @@ void runKeyDerivatorTests( KeyDerivator keyDerivator, List<dynamic> paramsPasswo
 
 }
 
-void _runKeyDerivatorTest( KeyDerivator keyDerivator, CipherParameters params, String password, String expectedHexKey ) {
-  keyDerivator.init(params);
+void _runKeyDerivatorTest(KeyDerivator keyDerivator, String password, String expectedHexKey) {
+  keyDerivator.reset();
 
-  var passwordBytes = createUint8ListFromString( password );
+  var passwordBytes = createUint8ListFromString(password);
   var out = keyDerivator.process(passwordBytes);
   var hexOut = formatBytesAsHexString(out);
 
-  expect( hexOut, equals(expectedHexKey) );
+  expect(hexOut, equals(expectedHexKey));
 }
-
