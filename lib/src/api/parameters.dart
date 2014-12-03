@@ -26,7 +26,7 @@ class Param<T> {
 
   static const Chain = const Param<List<Map<Param, dynamic>>>("chain");
 
-  static Map<Param, dynamic> merge(List<Map<Param, dynamic>> unchainedParams) => <Param, dynamic>{
+  static Map<Param, dynamic> join(List<Map<Param, dynamic>> unchainedParams) => <Param, dynamic>{
     Param.Chain: unchainedParams
   };
 
