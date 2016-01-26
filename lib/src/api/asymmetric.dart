@@ -84,7 +84,7 @@ abstract class KeyGenerator implements ParameterizedAlgorithm {
 }
 
 /// Asymmetric block cipher engines are expected to conform to this interface.
-abstract class AsymmetricBlockCipher implements ParameterizedAlgorithm, ResetableAlgorithm,
+abstract class AsymmetricBlockCipher implements ParameterizedNamedAlgorithm, ResetableAlgorithm,
     ProcessorAlgorithm {
 
   /// The [Registry] for [AsymmetricBlockCipher] algorithms

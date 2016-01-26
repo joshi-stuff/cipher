@@ -16,6 +16,7 @@ class Param<T> {
 
   static const BitStrength = const Param<int>("bitStrength");
   static const DesiredKeyLength = const Param<int>("desiredKeyLength");
+  static const DigestSize = const Param<int>("digestSize");
 
   static const Key = const Param<List<int>>("key");
   static const PublicKey = const Param<PublicKey>("publicKey");

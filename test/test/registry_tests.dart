@@ -13,7 +13,7 @@ import "package:unittest/unittest.dart";
 import "package:unittest/matcher.dart";
 
 void testAsymmetricBlockCipher(String algorithmName) {
-  var cipher = new AsymmetricBlockCipher(algorithmName);
+  var cipher = new AsymmetricBlockCipher(algorithmName, {});
   expect(cipher, new isInstanceOf<AsymmetricBlockCipher>("AsymmetricBlockCipher"));
   expect(cipher.algorithmName, algorithmName);
 }

@@ -23,7 +23,7 @@ class PKCS1Encoding extends BaseAsymmetricBlockCipher {
   final PrivateKey _privateKey;
   final PublicKey _publicKey;
 
-  PKCS1Encoding(SecureRandom random, AsymmetricBlockCipher engine, Map<Param, dynamic> params)
+  PKCS1Encoding(Map<Param, dynamic> params, AsymmetricBlockCipher engine, SecureRandom random)
       : super(_composeAlgorithmName(random, engine), params),
         _random = random,
         _engine = engine,

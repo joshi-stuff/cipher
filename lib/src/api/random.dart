@@ -22,7 +22,7 @@ abstract class SecureRandom implements ParameterizedNamedAlgorithm {
   static final registry = new Registry<SecureRandom>();
 
   /// Create the secure random specified by the standard [algorithmName].
-  factory SecureRandom([String algorithmName = "", Map<Param, dynamic> params = const {}]) =>
+  factory SecureRandom([String algorithmName = '', Map<Param, dynamic> params = const {}]) =>
       registry.create(algorithmName, params);
 
   /// Get this secure random standard algorithm name.

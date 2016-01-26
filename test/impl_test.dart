@@ -7,8 +7,6 @@
 
 library cipher.test.impl_test;
 
-import "dart:mirrors";
-
 import "package:cipher/cipher.dart";
 
 import "package:unittest/unittest.dart";
@@ -58,6 +56,7 @@ import './test/registry_tests.dart';
  * se usa - para distinguir subalgoritmos (ej: ECDSA, DET-ECDSA)
  */
 
+/*
 class Algol implements NamedAlgorithm {
 
   final String algorithmName;
@@ -72,17 +71,18 @@ class Algol implements NamedAlgorithm {
     String tabs = new String.fromCharCodes(new List<int>.filled(indent, 32));
 
     sb.write(tabs + algorithmName);
-    sb.write(tabs + ": ");
-    sb.write(tabs + _params.toString());
-    sb.write(tabs + " {\n");
+    sb.write(" ");
+    sb.write(_params.toString());
 
     if (_nextAlgorithms != null) {
+      sb.write(" {{\n");
       for (var algorithm in _nextAlgorithms) {
         sb.write(algorithm.toString(indent + 2));
       }
+      sb.write(tabs + "}}\n");
+    } else {
+      sb.write("\n");
     }
-
-    sb.write(tabs + "}\n");
 
     return sb.toString();
   }
@@ -149,123 +149,6 @@ class DefaultRandom extends Algol implements Random {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void bind(Type interface, Type implementation, NameChecker nameChecker) {
-  var classMirror = reflectClass(interface);
-  var registry = classMirror.getField(new Symbol('registry')).reflectee as Registry;
-
-  registry.registerDynamicFactory(typeFactory(implementation, nameChecker));
-}
-
-typedef bool NameChecker(String name);
-
-NameChecker withName(String fixedName) => (String name) => name == fixedName;
-NameChecker withNamePrefix(String namePrefix) => (String name) => name.startsWith(namePrefix);
-NameChecker get withAnyName => (String name) => true;
-
-Factory typeFactory(Type type, NameChecker nameChecker) => (String name, Map params) {
-  if (!nameChecker(name)) {
-    return null;
-  }
-
-  NamedAlgorithm algorithm = null;
-
-  var classMirror = reflectClass(type);
-  var ctorMirror = classMirror.declarations[classMirror.simpleName] as MethodMirror;
-  var firstArgumentTypeSymbol = ctorMirror.parameters[0].type.simpleName;
-
-  if (firstArgumentTypeSymbol == #String) {
-    algorithm = _createGenericAlgorithm(classMirror, name, params);
-
-  } else if (firstArgumentTypeSymbol == #Map) {
-    algorithm = _createConcreteAlgorithm(classMirror, ctorMirror, name, params);
-
-  } else {
-    throw new ArgumentError(
-        'Invalid parameter type ${firstArgumentTypeSymbol} found in constructor of type ' +
-            '${classMirror.simpleName}');
-  }
-
-  _validateCreatedAlgorithm(algorithm, name);
-
-  return algorithm;
-};
-
-NamedAlgorithm _createConcreteAlgorithm(ClassMirror classMirror, MethodMirror ctorMirror,
-    String name, Map params) {
-
-  var splitName = name.split("/");
-  var splitParams = Param.split(params, splitName.length);
-
-  var argumentTypeMirrors = ctorMirror.parameters;
-  var argumentValues = [splitParams[0]];
-
-  switch (argumentTypeMirrors.length) {
-    case 1:
-      break;
-
-    case 2:
-      var nextType = argumentTypeMirrors[1].type.reflectedType;
-      var nextTypeFactory = typeFactory(nextType, withAnyName);
-
-      var nextName = splitName.sublist(1).join('/');
-      var nextParams = Param.join(splitParams.sublist(1));
-
-      argumentValues.add(nextTypeFactory(nextName, nextParams));
-      break;
-
-    default:
-      if (splitName.length != 2) {
-        throw new ArgumentError(
-            'Invalid algorithm names list ${splitName[1]} found in the middle of algorithm name ' +
-                '${name}: algorithm names list can only appear at the end of the algorithm name');
-      }
-
-      var nextNames = splitName[1].split(':');
-      var expectedParamsCount = argumentTypeMirrors.length - 1;
-
-      if (nextNames.length > expectedParamsCount) {
-        throw new ArgumentError(
-            'Invalid number of algorithm names found in ${splitName[1]}: expected ' +
-                '${expectedParamsCount} arguments');
-      }
-
-      var nextParams = Param.split(splitParams[1], expectedParamsCount);
-
-      for (var i = 0; i < expectedParamsCount; i++) {
-        var nextType = argumentTypeMirrors[1 + i].type.reflectedType;
-        var nextTypeFactory = typeFactory(nextType, withAnyName);
-
-        var nextName = (i < nextNames.length) ? nextNames[i] : '';
-
-        argumentValues.add(nextTypeFactory(nextName, nextParams[i]));
-      }
-      break;
-  }
-
-  return classMirror.newInstance(new Symbol(''), argumentValues).reflectee;
-}
-
-NamedAlgorithm _createGenericAlgorithm(ClassMirror classMirror, String name, Map params) =>
-    classMirror.newInstance(new Symbol(''), [name, params]).reflectee;
-
-void _validateCreatedAlgorithm(NamedAlgorithm algorithm, String givenName) {
-  var algorithmName = algorithm.algorithmName;
-  var name = givenName;
-
-  while (algorithmName.endsWith(':')) {
-    algorithmName = algorithmName.substring(0, algorithmName.length - 1);
-  }
-
-  while (name.endsWith(':')) {
-    name = name.substring(0, name.length - 1);
-  }
-
-  if (algorithmName != name) {
-    throw new ArgumentError(
-        'Given name (${givenName}) and constructed algorithm name (${algorithm.algorithmName}) ' +
-            'do not match');
-  }
-}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -304,158 +187,10 @@ void main() {
   print(new Mode("CBC/AES/MD2:HW_RND", params));
   print(new Mode("CBC/AES/MD2:", params));
   print(new Mode("CBC/AES/MD2", params));
-
-  // PKCS1/RSA
-  //print(registry.create("CBC/AES/MD2:HW_RND", params));
-
-  // PKCS1/RSA/HW_SECRND
-  // SHA-1, SHA-224, SHA-256, SHA-384, SHA-512
-  // OFB-{bitBlockSize}/AES
-
-}
-
-/*
-void main() {
-  var registry = new Registry<Algorithm>();
-
-  registry.registerDynamicFactory(
-      new ConcreteAlgorithmFactory(
-          "A",
-          (params, chainedAlgorithm) => new Algol("A", params, chainedAlgorithm),
-          new ConcreteAlgorithmFactory(
-              "B",
-              (params, chainedAlgorithm) => new Algol("B", params, chainedAlgorithm),
-              new ConcreteAlgorithmFactory(
-                  "C",
-                  (params, chainedAlgorithm) => new Algol("C", params, chainedAlgorithm),
-                  new ConcreteAlgorithmFactory(
-                      "D",
-                      (params, chainedAlgorithm) => new Algol("D", params, chainedAlgorithm))))));
-
-  var params = {
-    Param.Key: [1, 2, 3],
-    Param.Chain: [{
-        Param.BitStrength: 7
-      }, {
-        Param.BlockSize: 8
-      }, {
-        Param.ForEncryption: true,
-        Param.IV: [1, 2]
-      }, {
-        Param.Salt: [1, 2, 3, 4, 5]
-      }]
-  };
-
-  var algorithm = registry.create("X/B/C/D", params);
-
-  print(algorithm);
-
-//  var algorithm2 = registry.create("B/C/D", params);
-
-//  print(algorithm2);
-}
-
-typedef Algorithm NamedCreator(String name, Map<Param, dynamic> params, Algorithm chainedAlgorithm);
-typedef Algorithm UnnamedCreator(Map<Param, dynamic> params, Algorithm chainedAlgorithm);
-
-abstract class Factory {
-
-  Factory _nextFactory;
-
-  Factory([this._nextFactory]);
-
-  Algorithm call(String name, Map<Param, dynamic> params, [Algorithm chainedAlgorithm]) {
-    var names = name.split("/");
-
-    var unchainedParams = Param.split(params, names.length);
-
-    Algorithm algorithm = _create(names.first, unchainedParams.first, chainedAlgorithm);
-
-    if (_nextFactory == null) {
-      return algorithm;
-    } else {
-      return _nextFactory.call(
-          names.sublist(1).join("/"),
-          Param.merge(unchainedParams.sublist(1)),
-          algorithm);
-    }
-  }
-
-  Algorithm _create(String name, Map<Param, dynamic> params, Algorithm chainedAlgorithm);
-
-}
-
-class ConcreteAlgorithmFactory extends Factory {
-
-  final String _algorithmName;
-  final UnnamedCreator _unnamedCreator;
-
-  ConcreteAlgorithmFactory(this._algorithmName, this._unnamedCreator, [Factory nextFactory])
-      : super(nextFactory);
-
-  Algorithm _create(String name, Map<Param, dynamic> params, Algorithm chainedAlgorithm) {
-    if (name != _algorithmName) return null;
-
-    return _unnamedCreator(params, chainedAlgorithm);
-  }
-
-}
-
-*/
-
-
-
-
-
-
-
-
-
-/*
-
-class MultiplexFactory extends Factory {
-
-  final Map<int, NamedCreator> _namedCreators;
-
-  MultiplexFactory(this._namedCreators);
-
-  Algorithm _create(String name, Map<Param, dynamic> params, Algorithm chainedAlgorithm) {
-    var names = name.split("/");
-    var namedCreator = _namedCreators[names.length];
-
-    if (namedCreator != null) {
-      return namedCreator(name, params, chainedAlgorithm);
-    }
-
-    return null;
-  }
-
-}
-
-class SecureRandomFactory extends GenericAlgorithmFactory {
-
-  SecureRandomFactory() : super((name, params, chainedAlgorithm) => new SecureRandom(name, params));
-
-}
-
-class GenericAlgorithmFactory extends Factory {
-
-  final NamedCreator _namedCreator;
-
-  GenericAlgorithmFactory(this._namedCreator);
-
-  Algorithm _create(String name, Map<Param, dynamic> params, Algorithm chainedAlgorithm) {
-    var names = name.split("/");
-
-    var unchainedParams = Param.split(params, names.length);
-
-    return _namedCreator(name, unchainedParams.last, chainedAlgorithm);
-  }
-
 }
 */
 
-/*
+
 void main() {
 
   initCipher();
@@ -469,9 +204,9 @@ void main() {
 
     test("AsymmetricBlockCipher returns valid implementations", () {
       testAsymmetricBlockCipher("RSA");
-      testAsymmetricBlockCipher("RSA/PKCS1");
+      testAsymmetricBlockCipher("PKCS1/RSA");
     });
-
+/*
     test("BlockCipher returns valid implementations", () {
       testBlockCipher("AES");
     });
@@ -559,8 +294,7 @@ void main() {
       testStreamCipher("AES/SIC");
       testStreamCipher("AES/CTR");
     });
-
+    */
   });
 
 }
-*/

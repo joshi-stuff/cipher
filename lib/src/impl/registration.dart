@@ -7,21 +7,6 @@
 
 part of cipher.impl;
 
-/*
-typedef ParameterizedNamedAlgorithm _CreatorFunction(Map<Param, dynamic> params);
-
-class _Creator {
-
-  final _CreatorFunction _creator;
-
-  const _Creator(this._creator);
-
-  ParameterizedNamedAlgorithm call(String name, Map<Param, dynamic> params) =>
-      _creator(Param.split(params, 1)[0]);
-
-}
-*/
-////////////////////////////////////////////////////////////////////////////////////////////////////
 void _registerAsymmetricBlockCiphers() {
   AsymmetricBlockCipher.registry.registerDynamicFactory(_pkcs1AsymmetricBlockCipherFactory);
   AsymmetricBlockCipher.registry["RSA"] = (name, params) => new RSAEngine(params);

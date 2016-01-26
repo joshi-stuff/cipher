@@ -12,6 +12,7 @@ import "dart:typed_data";
 import "package:bignum/bignum.dart";
 
 import "package:cipher/api.dart";
+import "package:cipher/random/base_secure_random.dart";
 import "package:cipher/random/block_ctr_random.dart";
 
 /**
@@ -28,11 +29,13 @@ class AutoSeedBlockCtrRandom implements SecureRandom {
   var _inAutoReseed = false;
   var _autoReseedKeyLength;
 
-  String get algorithmName => "${_delegate.cipher.algorithmName}/CTR/AUTO-SEED-PRNG";
-
-  AutoSeedBlockCtrRandom(BlockCipher cipher, [this._reseedIV = true]) {
+  AutoSeedBlockCtrRandom(Map<Param, dynamic> params, BlockCipher cipher) :
+    super()
+  {
     _delegate = new BlockCtrRandom(cipher);
   }
+
+  String get algorithmName => "${_delegate.cipher.algorithmName}/CTR/AUTO-SEED-PRNG";
 
   void seed(CipherParameters params) {
     if (params is ParametersWithIV<KeyParameter>) {
