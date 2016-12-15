@@ -37,7 +37,7 @@ class CBCBlockCipher extends BaseBlockCipher {
     _cbcV.setAll( 0, _IV );
     _cbcNextV.fillRange( 0, _cbcNextV.length, 0 );
 
-    _underlyingCipher.reset();
+    //_underlyingCipher.reset();
   }
 
   void init(bool forEncryption, ParametersWithIV params) {
