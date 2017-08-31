@@ -144,10 +144,10 @@ abstract class LongSHA2FamilyDigest extends BaseDigest {
     // expand 16 word block into 80 word blocks.
     for (var t = 16; t < 80; t++) {
       // _W[t] = _Sigma1(_W[t - 2]) + _W[t - 7] + _Sigma0(_W[t - 15]) + _W[t - 16];
-      _Sigma1(_W[t], _W[t - 2]);
-      _W[t].sum(_W[t - 7]);
-      _Sigma0(_W[t], _W[t - 15]);
-      _W[t].sum(_W[t - 16]);
+      _W[t].set(_Sigma1(_W[t - 2])
+        ..sum(_W[t - 7])
+        ..sum(_Sigma0(_W[t - 15]))
+        ..sum(_W[t - 16]));
     }
 
     var a = new Register64(H1);
@@ -163,44 +163,44 @@ abstract class LongSHA2FamilyDigest extends BaseDigest {
     for (var i = 0; i < 10; i ++) {
 
       // t = 8 * i
-      _Sum1(h, e); _Ch(h, e, f, g); h..sum(_K[t])..sum(_W[t++]);
+      h..sum(_Sum1(e))..sum(_Ch(e, f, g))..sum(_K[t])..sum(_W[t++]);
       d.sum(h);
-      _Sum0(h, a); _Maj(h, a, b, c);
+      h..sum(_Sum0(a))..sum(_Maj(a, b, c));
 
       // t = 8 * i + 1
-      _Sum1(g, d); _Ch(g, d, e, f); g..sum(_K[t])..sum(_W[t++]);
+      g..sum(_Sum1(d))..sum(_Ch(d, e, f))..sum(_K[t])..sum(_W[t++]);
       c.sum(g);
-      _Sum0(g, h); _Maj(g, h, a, b);
+      g..sum(_Sum0(h))..sum(_Maj(h, a, b));
 
       // t = 8 * i + 2
-      _Sum1(f, c); _Ch(f, c, d, e); f..sum(_K[t])..sum(_W[t++]);
+      f..sum(_Sum1(c))..sum(_Ch(c, d, e))..sum(_K[t])..sum(_W[t++]);
       b.sum(f);
-      _Sum0(f, g); _Maj(f, g, h, a);
+      f..sum(_Sum0(g))..sum(_Maj(g, h, a));
 
       // t = 8 * i + 3
-      _Sum1(e, b); _Ch(e, b, c, d); e..sum(_K[t])..sum(_W[t++]);
+      e..sum(_Sum1(b))..sum(_Ch(b, c, d))..sum(_K[t])..sum(_W[t++]);
       a.sum(e);
-      _Sum0(e, f); _Maj(e, f, g, h);
+      e..sum(_Sum0(f))..sum(_Maj(f, g, h));
 
       // t = 8 * i + 4
-      _Sum1(d, a); _Ch(d, a, b, c); d..sum(_K[t])..sum(_W[t++]);
+      d..sum(_Sum1(a))..sum(_Ch(a, b, c))..sum(_K[t])..sum(_W[t++]);
       h.sum(d);
-      _Sum0(d, e); _Maj(d, e, f, g);
+      d..sum(_Sum0(e))..sum(_Maj(e, f, g));
 
       // t = 8 * i + 5
-      _Sum1(c, h); _Ch(c, h, a, b); c..sum(_K[t])..sum(_W[t++]);
+      c..sum(_Sum1(h))..sum(_Ch(h, a, b))..sum(_K[t])..sum(_W[t++]);
       g.sum(c);
-      _Sum0(c,d); _Maj(c, d, e, f);
+      c..sum(_Sum0(d))..sum(_Maj(d, e, f));
 
       // t = 8 * i + 6
-      _Sum1(b, g); _Ch(b, g, h, a); b..sum(_K[t])..sum(_W[t++]);
+      b..sum(_Sum1(g))..sum(_Ch(g, h, a))..sum(_K[t])..sum(_W[t++]);
       f.sum(b);
-      _Sum0(b, c); _Maj(b, c, d, e);
+      b..sum(_Sum0(c))..sum(_Maj(c, d, e));
 
       // t = 8 * i + 7
-      _Sum1(a, f); _Ch(a, f, g, h); a..sum(_K[t])..sum(_W[t++]);
+      a..sum(_Sum1(f))..sum(_Ch(f, g, h))..sum(_K[t])..sum(_W[t++]);
       e.sum(a);
-      _Sum0(a, b); _Maj(a, b, c, d);
+      a..sum(_Sum0(b))..sum(_Maj(b, c, d));
     }
 
     H1.sum(a);
@@ -217,7 +217,7 @@ abstract class LongSHA2FamilyDigest extends BaseDigest {
     _W.fillRange(0, 16, 0);
   }
 
-  void _Ch(Register64 r, Register64 x, Register64 y, Register64 z) {
+  Register64 _Ch(Register64 x, Register64 y, Register64 z) {
     // r += ((x & y) ^ ((~x) & z));
     Register64 r0 = new Register64(x);
     r0.and(y);
@@ -227,10 +227,10 @@ abstract class LongSHA2FamilyDigest extends BaseDigest {
     r1.and(z);
 
     r0.xor(r1);
-    r.sum(r0);
+    return r0;
   }
 
-  void _Maj(Register64 r, Register64 x, Register64 y, Register64 z) {
+  Register64 _Maj(Register64 x, Register64 y, Register64 z) {
     // r += ((x & y) ^ (x & z) ^ (y & z));
     Register64 r0 = new Register64(x);
     r0.and(y);
@@ -244,10 +244,10 @@ abstract class LongSHA2FamilyDigest extends BaseDigest {
     r0.xor(r1);
     r0.xor(r2);
 
-    r.sum(r0);
+    return r0;
   }
 
-  void _Sum0(Register64 r, Register64 x) {
+  Register64 _Sum0(Register64 x) {
     // r += ((x << 36)|(x >> 28)) ^ ((x << 30)|(x >> 34)) ^ ((x << 25)|(x >> 39));
     Register64 r0 = new Register64(x);
     r0.rotl(36);
@@ -261,10 +261,10 @@ abstract class LongSHA2FamilyDigest extends BaseDigest {
     r0.xor(r1);
     r0.xor(r2);
 
-    r.sum(r0);
+    return r0;
   }
 
-  void _Sum1(Register64 r, Register64 x) {
+  Register64 _Sum1(Register64 x) {
     // r += ((x << 50)|(x >> 14)) ^ ((x << 46)|(x >> 18)) ^ ((x << 23)|(x >> 41));
     Register64 r0 = new Register64(x);
     r0.rotl(50);
@@ -278,10 +278,10 @@ abstract class LongSHA2FamilyDigest extends BaseDigest {
     r0.xor(r1);
     r0.xor(r2);
 
-    r.sum(r0);
+    return r0;
   }
 
-  void _Sigma0(Register64 r, Register64 x) {
+  Register64 _Sigma0(Register64 x) {
     // r = (((x << 63)|(x >> 1)) ^ ((x << 56)|(x >> 8)) ^ (x >> 7));
     Register64 r0 = new Register64(x);
     r0.rotl(63);
@@ -295,10 +295,10 @@ abstract class LongSHA2FamilyDigest extends BaseDigest {
     r0.xor(r1);
     r0.xor(r2);
 
-    r.sum(r0);
+    return r0;
   }
 
-  void _Sigma1(Register64 r, Register64 x) {
+  Register64 _Sigma1(Register64 x) {
     // r = (((x << 45)|(x >> 19)) ^ ((x << 3)|(x >> 61)) ^ (x >> 6));
     Register64 r0 = new Register64(x);
     r0.rotl(45);
@@ -312,7 +312,7 @@ abstract class LongSHA2FamilyDigest extends BaseDigest {
     r0.xor(r1);
     r0.xor(r2);
 
-    r.sum(r0);
+    return r0;
   }
 
   /**
